@@ -1,22 +1,24 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
+import { AgentLauncher } from "@/components/AgentLauncher";
 
 export const metadata: Metadata = {
   title: {
-    default: "Lumina — Safe XRP into Flare XRPFi",
+    default: "Lumina — Your copilot for XRP on Flare",
     template: "%s · Lumina",
   },
   description:
-    "Lumina is your copilot for putting XRP to work on Flare, safely. Explore strategies with honest risk labels, get a guided path, and see your positions clearly.",
+    "Lumina is an AI copilot that helps XRP holders enter Flare XRPFi safely: honest risk labels, guided deposits, and live on-chain positions — nothing invented.",
   applicationName: "Lumina",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "Lumina" },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#f7f7f3",
+  themeColor: "#070b12",
 };
 
 export default function RootLayout({
@@ -24,8 +26,13 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className="font-sans">
-        <Providers>{children}</Providers>
+      <body className="flex min-h-screen flex-col font-sans">
+        <Providers>
+          <SiteHeader />
+          <div className="flex-1">{children}</div>
+          <SiteFooter />
+          <AgentLauncher />
+        </Providers>
       </body>
     </html>
   );

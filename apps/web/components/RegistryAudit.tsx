@@ -74,65 +74,58 @@ export function RegistryAudit({ strategies }: { strategies: Strategy[] }) {
   );
 
   return (
-    <section className="mt-8">
-      <div className="flex items-baseline justify-between">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-muted">
-          On-chain registry
-        </h2>
+    <section className="mt-14">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="micro">On-chain registry</h2>
         <p className="font-mono text-[10px] text-muted">
-          {shortenAddress(COSTON2_CONTRACTS.luminaStrategyRegistry)}
+          {shortenAddress(COSTON2_CONTRACTS.luminaStrategyRegistry, 6)}
         </p>
       </div>
-      <p className="mt-1 text-[13px] leading-snug text-muted">
-        Live from LuminaStrategyRegistry on Coston2. Only vaults registered here are
-        executable — this is the contract, not a promise.
+      <p className="mt-1 max-w-2xl text-[13px] leading-snug text-muted">
+        Live from LuminaStrategyRegistry on Coston2 — the contract that decides what
+        Lumina considers executable. The catalog above is cross-checked against it.
       </p>
 
       {query.isPending && (
-        <div className="mt-3 space-y-2">
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-2xl bg-line/60" />
+            <div key={i} className="h-24 animate-pulse rounded-2xl bg-line/40" />
           ))}
         </div>
       )}
 
       {query.isError && (
-        <div className="mt-3 rounded-2xl border border-warn/30 bg-warn/5 p-4 text-sm text-warn">
+        <div className="mt-4 rounded-2xl border border-warn/30 bg-warn/5 p-4 text-[13px] text-warn">
           Could not reach Coston2 right now. The registry read will retry once the RPC
           is reachable.
         </div>
       )}
 
       {query.data && (
-        <ul className="mt-3 space-y-2">
+        <ul className="mt-4 grid gap-3 md:grid-cols-2">
           {query.data.records.map((r) => {
             const inCatalog = catalogAddresses.has(r.vault.toLowerCase());
             return (
-              <li
-                key={r.vaultId.toString()}
-                className="rounded-2xl border border-line bg-surface p-3.5 shadow-card"
-              >
+              <li key={r.vaultId.toString()} className="card p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-ink">
+                    <p className="truncate text-[13px] font-semibold text-ink">
                       #{r.vaultId.toString()} · {r.name}
                     </p>
-                    <p className="mt-0.5 font-mono text-[11px] text-muted">
+                    <p className="mt-0.5 font-mono text-[10px] text-muted">
                       {r.symbol} · {shortenAddress(r.vault)}
                     </p>
-                    <p className="mt-1 text-[11px] leading-snug text-muted">
-                      {r.kind === 0 ? "Firelight" : "Upshift"} strategy · APY range{" "}
-                      {r.apyRange}
-                      {r.metadataURI ? ` · ${r.metadataURI}` : ""}
+                    <p className="mt-1.5 text-[11px] leading-snug text-muted">
+                      {r.kind === 0 ? "Firelight" : "Upshift"} · APY range {r.apyRange}
                     </p>
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-1.5">
                     <RiskBadge tier={tierForScore(r.riskScore)} size="sm" />
                     <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                      className={`rounded-full px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wider ${
                         inCatalog
-                          ? "bg-brand-soft text-brand-strong"
-                          : "bg-warn/10 text-warn"
+                          ? "bg-brand/10 text-brand"
+                          : "bg-gold-soft text-gold"
                       }`}
                     >
                       {inCatalog ? "in catalog" : "registry only"}
@@ -143,7 +136,7 @@ export function RegistryAudit({ strategies }: { strategies: Strategy[] }) {
             );
           })}
           {query.data.records.length === 0 && (
-            <li className="rounded-2xl border border-line bg-surface p-4 text-sm text-muted">
+            <li className="card p-4 text-[13px] text-muted">
               No active vaults registered on-chain.
             </li>
           )}
@@ -151,9 +144,9 @@ export function RegistryAudit({ strategies }: { strategies: Strategy[] }) {
       )}
 
       {query.data && (
-        <p className="mt-3 text-[11px] text-muted">
-          Registry owner {shortenAddress(query.data.owner)} · {query.data.count.toString()}{" "}
-          vaults total · read live from Coston2.
+        <p className="mt-3 font-mono text-[10px] text-muted">
+          owner {shortenAddress(query.data.owner)} · {query.data.count.toString()} vaults
+          total · read live from Coston2
         </p>
       )}
     </section>

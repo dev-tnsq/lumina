@@ -111,7 +111,7 @@ export function EvmDepositFlow({ strategy }: { strategy: Strategy }) {
   return (
     <div className="space-y-4">
       {/* Wallet connection */}
-      <section className="rounded-2xl border border-line bg-surface p-4 shadow-card">
+      <section className="card p-5">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-ink">1 · Connect an EVM wallet</h3>
           {isConnected && address && (
@@ -125,7 +125,7 @@ export function EvmDepositFlow({ strategy }: { strategy: Strategy }) {
                 key={c.id}
                 type="button"
                 onClick={() => connect({ connector: c })}
-                className="rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-paper transition-colors hover:bg-ink-soft"
+                className="rounded-xl border border-line bg-surface-2 px-4 py-2.5 text-[13px] font-semibold text-ink transition-colors hover:border-brand"
               >
                 Connect {c.name}
               </button>
@@ -145,7 +145,7 @@ export function EvmDepositFlow({ strategy }: { strategy: Strategy }) {
       {isConnected && address && (
         <>
           {/* Balance + faucet */}
-          <section className="rounded-2xl border border-line bg-surface p-4 shadow-card">
+          <section className="card p-5">
             <h3 className="text-sm font-semibold text-ink">2 · Get test {asset.symbol}</h3>
             <p className="mt-1 text-[13px] leading-snug text-muted">
               Balance:{" "}
@@ -154,7 +154,7 @@ export function EvmDepositFlow({ strategy }: { strategy: Strategy }) {
               </span>
             </p>
             {balance != null && balance === 0n && (
-              <div className="mt-2 rounded-xl bg-gold-soft p-3 text-[13px] leading-snug text-gold">
+              <div className="mt-2 rounded-xl border border-gold/30 bg-gold-soft p-3 text-[13px] leading-snug text-gold">
                 You have no test FXRP yet. Claim the daily Coston2 faucet allowance (
                 {COSTON2.faucetUrl}) then come back. FXRP is a test token — it has no real
                 value.
@@ -163,7 +163,7 @@ export function EvmDepositFlow({ strategy }: { strategy: Strategy }) {
           </section>
 
           {/* Amount */}
-          <section className="rounded-2xl border border-line bg-surface p-4 shadow-card">
+          <section className="card p-5">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-semibold text-ink">3 · How much to deposit</h3>
               {balance != null && balance > 0n && (
@@ -176,7 +176,7 @@ export function EvmDepositFlow({ strategy }: { strategy: Strategy }) {
                 </button>
               )}
             </div>
-            <div className="mt-2 flex items-center gap-2 rounded-xl border border-line bg-paper px-3 py-2.5 focus-within:border-brand">
+            <div className="mt-2 flex items-center gap-2 rounded-xl border border-line bg-surface-2 px-3 py-2.5 focus-within:border-brand">
               <input
                 type="text"
                 inputMode="decimal"
@@ -199,7 +199,7 @@ export function EvmDepositFlow({ strategy }: { strategy: Strategy }) {
           </section>
 
           {/* Execute */}
-          <section className="rounded-2xl border border-line bg-surface p-4 shadow-card">
+          <section className="card p-5">
             <h3 className="text-sm font-semibold text-ink">
               4 · {needsApproval ? "Approve, then deposit" : "Deposit"}
             </h3>
@@ -215,7 +215,7 @@ export function EvmDepositFlow({ strategy }: { strategy: Strategy }) {
                   type="button"
                   disabled={!parsed || parsed > (balance ?? 0n) || busy}
                   onClick={approve}
-                  className="flex-1 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-white shadow-card transition-colors hover:bg-brand-strong disabled:opacity-40"
+                  className="flex-1 rounded-xl bg-brand px-4 py-3 text-[13px] font-bold text-[#03201b] shadow-glow transition-colors hover:bg-brand-strong disabled:opacity-40"
                 >
                   {isConfirming && txHash ? "Confirming…" : "Approve"}
                 </button>
@@ -224,7 +224,7 @@ export function EvmDepositFlow({ strategy }: { strategy: Strategy }) {
                   type="button"
                   disabled={!parsed || parsed > (balance ?? 0n) || busy}
                   onClick={deposit}
-                  className="flex-1 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-white shadow-card transition-colors hover:bg-brand-strong disabled:opacity-40"
+                  className="flex-1 rounded-xl bg-brand px-4 py-3 text-[13px] font-bold text-[#03201b] shadow-glow transition-colors hover:bg-brand-strong disabled:opacity-40"
                 >
                   {isConfirming && txHash ? "Depositing…" : "Deposit"}
                 </button>
@@ -236,7 +236,7 @@ export function EvmDepositFlow({ strategy }: { strategy: Strategy }) {
             )}
 
             {isSuccess && txHash && (
-              <div className="mt-3 rounded-xl bg-brand-soft p-3">
+              <div className="mt-3 rounded-xl border border-brand/30 bg-brand-soft p-3">
                 <p className="text-sm font-semibold text-brand">
                   Deposit submitted to Coston2.
                 </p>

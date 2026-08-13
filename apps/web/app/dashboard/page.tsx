@@ -1,4 +1,3 @@
-import { BottomNav } from "@/components/BottomNav";
 import { Dashboard, DashboardHeader } from "@/components/Dashboard";
 
 export const metadata = {
@@ -9,12 +8,13 @@ export const metadata = {
 
 export default function DashboardPage() {
   return (
-    <div className="container-phone pb-safe">
-      <DashboardHeader />
-      <main className="mt-4 px-4">
-        <Dashboard />
-      </main>
-      <BottomNav />
+    <div className="container-app py-10">
+      <div className="mx-auto max-w-2xl">
+        <DashboardHeader />
+        <main className="mt-6">
+          <Dashboard />
+        </main>
+      </div>
     </div>
   );
 }

@@ -42,47 +42,56 @@ export function VaultReadout({
   });
 
   return (
-    <section className="rounded-2xl border border-line bg-surface p-4 shadow-card">
-      <h2 className="text-sm font-semibold text-ink">Vault on Coston2</h2>
+    <section className="card p-5">
+      <div className="flex items-center justify-between">
+        <h2 className="micro">Vault on Coston2</h2>
+        <span className="font-mono text-[11px] text-muted">vaultId {vault.vaultId}</span>
+      </div>
 
-      <dl className="mt-2 space-y-1.5 text-[13px]">
+      <dl className="mt-3 space-y-1.5 text-[13px]">
         <div className="flex justify-between gap-3">
           <dt className="text-muted">Address</dt>
           <dd className="font-mono text-ink">{shortenAddress(vault.address, 6)}</dd>
         </div>
         <div className="flex justify-between gap-3">
-          <dt className="text-muted">vaultId</dt>
-          <dd className="font-mono text-ink">{vault.vaultId}</dd>
-        </div>
-        <div className="flex justify-between gap-3">
           <dt className="text-muted">Asset</dt>
           <dd className="text-ink">{assetSymbol}</dd>
         </div>
+        <div className="flex justify-between gap-3">
+          <dt className="text-muted">Symbol</dt>
+          <dd className="text-ink">{vault.symbol}</dd>
+        </div>
+        {vault.apyRange && (
+          <div className="flex justify-between gap-3">
+            <dt className="text-muted">Registry APY range</dt>
+            <dd className="font-mono text-ink">{vault.apyRange}</dd>
+          </div>
+        )}
       </dl>
 
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        <div className="rounded-xl bg-paper p-3">
-          <p className="text-[11px] text-muted">Total assets (on-chain)</p>
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        <div className="rounded-xl border border-line/60 bg-surface-2 p-3.5">
+          <p className="micro">Total assets · on-chain</p>
           {query.data ? (
-            <p className="mt-0.5 text-base font-bold text-ink">
+            <p className="mt-1 font-mono text-lg font-bold text-ink">
               {formatCompact(query.data.totalAssets, 6)} {assetSymbol}
             </p>
           ) : query.isError ? (
-            <p className="mt-0.5 text-sm font-semibold text-warn">Unreachable</p>
+            <p className="mt-1 text-sm font-semibold text-warn">Unreachable</p>
           ) : (
-            <p className="mt-0.5 h-5 w-20 animate-pulse rounded bg-line/60" />
+            <p className="mt-1.5 h-6 w-20 animate-pulse rounded bg-line/60" />
           )}
         </div>
-        <div className="rounded-xl bg-paper p-3">
-          <p className="text-[11px] text-muted">Shares outstanding</p>
+        <div className="rounded-xl border border-line/60 bg-surface-2 p-3.5">
+          <p className="micro">Shares outstanding</p>
           {query.data ? (
-            <p className="mt-0.5 text-base font-bold text-ink">
+            <p className="mt-1 font-mono text-lg font-bold text-ink">
               {formatCompact(query.data.totalSupply, query.data.decimals)}
             </p>
           ) : query.isError ? (
-            <p className="mt-0.5 text-sm font-semibold text-warn">Unreachable</p>
+            <p className="mt-1 text-sm font-semibold text-warn">Unreachable</p>
           ) : (
-            <p className="mt-0.5 h-5 w-20 animate-pulse rounded bg-line/60" />
+            <p className="mt-1.5 h-6 w-20 animate-pulse rounded bg-line/60" />
           )}
         </div>
       </div>

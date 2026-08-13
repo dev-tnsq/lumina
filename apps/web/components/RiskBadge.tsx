@@ -21,10 +21,10 @@ const STYLES: Record<RiskTier, { chip: string; dot: string; label: string }> = {
 /** The canonical risk badge — used on cards, detail pages and disclosures. */
 export function RiskBadge({ tier, size = "md" }: { tier: RiskTier; size?: "sm" | "md" }) {
   const s = STYLES[tier];
-  const pad = size === "sm" ? "px-2 py-0.5 text-[11px]" : "px-2.5 py-1 text-xs";
+  const pad = size === "sm" ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-1 text-[11px]";
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full font-semibold ${pad} ${s.chip}`}
+      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full font-semibold ${pad} ${s.chip}`}
     >
       <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} aria-hidden="true" />
       {s.label}

@@ -11,6 +11,7 @@ export * from "./constants";
 export * from "./abis";
 export * from "./risk";
 export * from "./strategies";
+export * from "./agent";
 export * from "./flare";
 export * from "./format";
 export * from "./recommend";

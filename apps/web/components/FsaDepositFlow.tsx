@@ -112,7 +112,7 @@ export function FsaDepositFlow({ strategy }: { strategy: Strategy }) {
   return (
     <div className="space-y-4">
       {/* Step 1 — XRPL address */}
-      <section className="rounded-2xl border border-line bg-surface p-4 shadow-card">
+      <section className="card p-5">
         <h3 className="text-sm font-semibold text-ink">1 · Your XRPL Testnet address</h3>
         <p className="mt-1 text-[13px] leading-snug text-muted">
           Lumina reads your deterministic Flare Smart Account for this address from the
@@ -127,7 +127,7 @@ export function FsaDepositFlow({ strategy }: { strategy: Strategy }) {
           }}
           placeholder="rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"
           aria-label="XRPL testnet address"
-          className="mt-3 w-full rounded-xl border border-line bg-paper px-3 py-2.5 font-mono text-sm text-ink outline-none placeholder:text-line focus:border-brand"
+          className="mt-3 w-full rounded-xl border border-line bg-surface-2 px-3 py-2.5 font-mono text-sm text-ink outline-none placeholder:text-muted/60 focus:border-brand"
         />
         {xrplAddress !== "" && !addressValid && (
           <p className="mt-1.5 text-xs text-danger">
@@ -138,7 +138,7 @@ export function FsaDepositFlow({ strategy }: { strategy: Strategy }) {
           type="button"
           disabled={!addressValid || deriving}
           onClick={derive}
-          className="mt-3 w-full rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-paper transition-colors hover:bg-ink-soft disabled:opacity-40"
+          className="mt-3 w-full rounded-xl border border-line bg-surface-2 px-4 py-2.5 text-[13px] font-semibold text-ink transition-colors hover:border-brand disabled:opacity-40"
         >
           {deriving
             ? "Reading registry…"
@@ -148,7 +148,7 @@ export function FsaDepositFlow({ strategy }: { strategy: Strategy }) {
         </button>
         {derivedError && <p className="mt-2 text-xs text-danger">{derivedError}</p>}
         {derived && (
-          <div className="mt-3 space-y-2 rounded-xl bg-brand-soft p-3">
+          <div className="mt-3 space-y-2 rounded-xl border border-brand/30 bg-brand-soft p-3">
             <div>
               <p className="text-xs text-muted">Flare Smart Account (EVM, Coston2)</p>
               <p className="mt-0.5 font-mono text-sm font-semibold break-all text-brand">
@@ -175,9 +175,9 @@ export function FsaDepositFlow({ strategy }: { strategy: Strategy }) {
       </section>
 
       {/* Step 2 — amount */}
-      <section className="rounded-2xl border border-line bg-surface p-4 shadow-card">
+      <section className="card p-5">
         <h3 className="text-sm font-semibold text-ink">2 · How much XRP to deposit</h3>
-        <div className="mt-2 flex items-center gap-2 rounded-xl border border-line bg-paper px-3 py-2.5 focus-within:border-brand">
+        <div className="mt-2 flex items-center gap-2 rounded-xl border border-line bg-surface-2 px-3 py-2.5 focus-within:border-brand">
           <input
             type="text"
             inputMode="decimal"
@@ -206,7 +206,7 @@ export function FsaDepositFlow({ strategy }: { strategy: Strategy }) {
       </section>
 
       {/* Step 3 — payment */}
-      <section className="rounded-2xl border border-line bg-surface p-4 shadow-card">
+      <section className="card p-5">
         <h3 className="text-sm font-semibold text-ink">3 · Review the prepared payment</h3>
         <p className="mt-1 text-[13px] leading-snug text-muted">
           The XRPL payment to your smart account. The memo is the FSA instruction —{" "}
@@ -219,14 +219,14 @@ export function FsaDepositFlow({ strategy }: { strategy: Strategy }) {
 
         {paymentJson ? (
           <>
-            <pre className="mt-3 max-h-64 overflow-auto rounded-xl bg-ink p-3 font-mono text-[11px] leading-relaxed text-paper">
+            <pre className="mt-3 max-h-64 overflow-auto rounded-xl border border-line/60 bg-[#04070c] p-3 font-mono text-[11px] leading-relaxed text-ink-soft">
               {JSON.stringify(paymentJson, null, 2)}
             </pre>
             <button
               type="button"
               onClick={copyPayment}
               data-copied={copied ? "true" : "false"}
-              className="mt-3 w-full rounded-xl border border-brand bg-brand-soft px-4 py-2.5 text-sm font-semibold text-brand transition-colors hover:bg-brand"
+              className="mt-3 w-full rounded-xl border border-brand/40 bg-brand/10 px-4 py-2.5 text-[13px] font-semibold text-brand transition-colors hover:bg-brand hover:text-[#03201b]"
             >
               {copied ? "Copied ✓" : "Copy transaction JSON"}
             </button>
@@ -271,7 +271,7 @@ export function FsaDepositFlow({ strategy }: { strategy: Strategy }) {
           </li>
         </ol>
 
-        <p className="mt-3 rounded-xl bg-gold-soft p-3 text-[12px] leading-snug text-gold">
+        <p className="mt-3 rounded-xl border border-gold/30 bg-gold-soft p-3 text-[12px] leading-snug text-gold">
           Testnet-only: XRP and FXRP on test networks have no real value. The memo uses
           the same FSA instruction encoding as production, so the mainnet transition is
           mechanical.

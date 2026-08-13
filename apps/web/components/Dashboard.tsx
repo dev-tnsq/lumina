@@ -39,11 +39,11 @@ export function Dashboard() {
   return (
     <div className="space-y-4">
       {/* Header: wallet + address lookup */}
-      <section className="rounded-2xl border border-line bg-surface p-4 shadow-card">
-        <h2 className="text-sm font-semibold text-ink">Whose positions?</h2>
+      <section className="card p-5">
+        <h2 className="micro">Whose positions?</h2>
 
         {isConnected && (
-          <div className="mt-2 flex items-center justify-between rounded-xl bg-paper p-3">
+          <div className="mt-2 flex items-center justify-between rounded-xl border border-line/60 bg-surface-2 p-3">
             <div>
               <p className="font-mono text-sm font-semibold break-all text-ink">
                 {shortenAddress(address!, 6)}
@@ -70,7 +70,7 @@ export function Dashboard() {
                 key={c.id}
                 type="button"
                 onClick={() => connect({ connector: c })}
-                className="rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-paper transition-colors hover:bg-ink-soft"
+                className="rounded-xl border border-line bg-surface-2 px-4 py-2.5 text-[13px] font-semibold text-ink transition-colors hover:border-brand"
               >
                 Connect {c.name}
               </button>
@@ -85,7 +85,7 @@ export function Dashboard() {
             onChange={(e) => setLookup(e.target.value)}
             placeholder="or look up any Coston2 address"
             aria-label="Look up any Coston2 address"
-            className="min-w-0 flex-1 rounded-xl border border-line bg-paper px-3 py-2.5 font-mono text-sm text-ink outline-none placeholder:font-sans placeholder:text-line focus:border-brand"
+            className="flex-1 rounded-xl border border-line bg-surface-2 px-3 py-2.5 font-mono text-[13px] text-ink outline-none placeholder:font-sans placeholder:text-muted/60 focus:border-brand"
           />
           <button
             type="submit"
@@ -195,15 +195,14 @@ function Positions({ address }: { address: `0x${string}` }) {
   return (
     <div className="space-y-4">
       {/* FXRP balance */}
-      <section className="rounded-2xl border border-line bg-surface p-4 shadow-card">
+      <section className="card p-5">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-ink">FXRP balance</h3>
-          <span className="rounded-full bg-brand-soft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand">
-            Testnet
-          </span>
+          <h3 className="micro">FXRP balance</h3>
+          <span className="pulse-dot" aria-hidden="true" />
         </div>
-        <p className="mt-2 text-2xl font-bold text-ink">
-          {formatUnitsValue(fxrpBalance, ASSET.decimals)} <span className="text-base font-semibold text-muted">FXRP</span>
+        <p className="mt-2 font-mono text-3xl font-bold text-ink">
+          {formatUnitsValue(fxrpBalance, ASSET.decimals)}{" "}
+          <span className="text-base font-semibold text-muted">FXRP</span>
         </p>
         <p className="mt-1 text-[12px] text-muted">
           The Flare XRP test token. This is what vaults accept.
@@ -212,12 +211,10 @@ function Positions({ address }: { address: `0x${string}` }) {
 
       {/* Vault positions */}
       <section>
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted">
-          Vault positions
-        </h3>
+        <h3 className="micro">Vault positions</h3>
         <div className="mt-2 space-y-3">
           {heldRows.length === 0 ? (
-            <div className="rounded-2xl border border-line bg-surface p-4 text-sm text-muted">
+            <div className="card p-4 text-[13px] text-muted">
               No vault shares yet.{" "}
               <Link href="/strategies" className="font-semibold text-brand">
                 Explore strategies
@@ -229,7 +226,7 @@ function Positions({ address }: { address: `0x${string}` }) {
               <Link
                 key={strategy.id}
                 href={`/strategies/${strategy.id}`}
-                className="block rounded-2xl border border-line bg-surface p-4 shadow-card transition-colors hover:border-brand"
+                className="block card p-5 transition-colors hover:border-brand"
               >
                 <div className="flex items-center justify-between">
                   <div className="min-w-0">
@@ -254,7 +251,7 @@ function Positions({ address }: { address: `0x${string}` }) {
         </div>
       </section>
 
-      <p className="rounded-xl bg-paper p-3 text-[12px] leading-snug text-muted">
+      <p className="rounded-xl border border-line/60 bg-surface-2 p-3 text-[12px] leading-snug text-muted">
         All values are read live from Coston2. “Value in FXRP” uses the vault&apos;s
         on-chain share price.
       </p>
@@ -264,8 +261,8 @@ function Positions({ address }: { address: `0x${string}` }) {
 
 function EmptyState({ children }: { children?: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border border-dashed border-line bg-surface p-8 text-center shadow-card">
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-soft">
+    <section className="card border-dashed p-10 text-center">
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand/10">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <rect
             x="3"
@@ -273,25 +270,25 @@ function EmptyState({ children }: { children?: React.ReactNode }) {
             width="18"
             height="13"
             rx="2.5"
-            stroke="#0e7c66"
+            stroke="#2dd4bf"
             strokeWidth="1.8"
           />
-          <path d="M16.5 12.5h.01" stroke="#0e7c66" strokeWidth="2.4" strokeLinecap="round" />
-          <path d="M3 10h18" stroke="#0e7c66" strokeWidth="1.8" />
+          <path d="M16.5 12.5h.01" stroke="#2dd4bf" strokeWidth="2.4" strokeLinecap="round" />
+          <path d="M3 10h18" stroke="#2dd4bf" strokeWidth="1.8" />
         </svg>
       </div>
-      <h3 className="mt-3 text-base font-semibold text-ink">
+      <h3 className="mt-4 text-base font-semibold text-ink">
         {children ? "No positions yet" : "Your dashboard is ready"}
       </h3>
       {children ?? (
-        <p className="mt-1.5 text-sm leading-relaxed text-muted">
-          Connect an EVM wallet or look up any Coston2 address to see real on-chain
-          FXRP balances and vault shares. Testnet only.
+        <p className="mx-auto mt-1.5 max-w-sm text-[13px] leading-relaxed text-muted">
+          Connect an EVM wallet or look up any Coston2 address to see real on-chain FXRP
+          balances and vault shares.
         </p>
       )}
       <Link
         href="/strategies"
-        className="mt-4 inline-block rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-card transition-colors hover:bg-brand-strong"
+        className="mt-4 inline-flex rounded-xl bg-brand px-5 py-2.5 text-[13px] font-bold text-[#03201b] shadow-glow transition-colors hover:bg-brand-strong"
       >
         Explore strategies
       </Link>
@@ -301,10 +298,15 @@ function EmptyState({ children }: { children?: React.ReactNode }) {
 
 export function DashboardHeader() {
   return (
-    <header className="px-4 pt-5">
-      <h1 className="text-2xl font-bold tracking-tight text-ink">Dashboard</h1>
-      <p className="mt-1 text-sm leading-relaxed text-ink-soft">
-        Your FXRP and vault positions on Coston2 — read live from the chain.
+    <header>
+      <p className="micro flex items-center gap-2">
+        <span className="pulse-dot" aria-hidden="true" />
+        positions · live reads
+      </p>
+      <h1 className="mt-1 text-3xl font-bold tracking-tight text-ink">Dashboard</h1>
+      <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+        Your FXRP and vault positions on Coston2 — read live from the chain, nothing
+        cached or estimated.
       </p>
     </header>
   );

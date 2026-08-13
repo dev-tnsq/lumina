@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { BottomNav } from "@/components/BottomNav";
 import type { RiskPreferences, RiskTier } from "@lumina/shared";
 import { getStrategy, recommendLive } from "@lumina/shared";
 import { RiskBadge } from "@/components/RiskBadge";
@@ -67,39 +66,38 @@ export default function OnboardingPage() {
     step === 0 ? tolerance != null : step === 1 ? lockup != null : true;
 
   return (
-    <div className="container-phone pb-safe">
-      <header className="px-4 pt-5">
-        <Link href="/" className="text-[13px] font-semibold text-brand">
+    <div className="container-app py-10">
+      <div className="mx-auto max-w-xl">
+        <Link href="/" className="text-[13px] font-semibold text-brand hover:underline">
           ← Home
         </Link>
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-ink">
-          {step === 0 && "How do you feel about risk?"}
-          {step === 1 && "How quickly do you need your money?"}
-          {step === 2 && "One last preference"}
-        </h1>
+        <div className="mt-3 flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight text-ink">
+            {step === 0 && "How do you feel about risk?"}
+            {step === 1 && "How quickly do you need your money?"}
+            {step === 2 && "One last preference"}
+          </h1>
+          <span className="font-mono text-[11px] text-muted">0{step + 1}/03</span>
+        </div>
         <div className="mt-3 flex gap-1.5" aria-hidden="true">
           {[0, 1, 2].map((i) => (
             <span
               key={i}
-              className={`h-1.5 flex-1 rounded-full ${i <= step ? "bg-brand" : "bg-line"}`}
+              className={`h-1 flex-1 rounded-full ${i <= step ? "bg-brand" : "bg-line"}`}
             />
           ))}
         </div>
-      </header>
 
-      <main className="px-4">
-        {step === 0 && (
-          <div className="mt-4 space-y-3">
-            {TOLERANCE_OPTIONS.map((o) => (
+        <div className="mt-6 space-y-3">
+          {step === 0 &&
+            TOLERANCE_OPTIONS.map((o) => (
               <button
                 key={o.value}
                 type="button"
                 onClick={() => setTolerance(o.value)}
                 aria-pressed={tolerance === o.value}
-                className={`w-full rounded-2xl border p-4 text-left transition-colors ${
-                  tolerance === o.value
-                    ? "border-brand bg-brand-soft"
-                    : "border-line bg-surface hover:border-brand/50"
+                className={`card w-full p-4 text-left transition-colors ${
+                  tolerance === o.value ? "border-brand/60 shadow-glow" : "hover:border-brand/40"
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -109,72 +107,58 @@ export default function OnboardingPage() {
                 <p className="mt-1 text-[13px] leading-snug text-muted">{o.desc}</p>
               </button>
             ))}
-          </div>
-        )}
 
-        {step === 1 && (
-          <div className="mt-4 space-y-3">
-            {LOCKUP_OPTIONS.map((o) => (
+          {step === 1 &&
+            LOCKUP_OPTIONS.map((o) => (
               <button
                 key={o.value}
                 type="button"
                 onClick={() => setLockup(o.value)}
                 aria-pressed={lockup === o.value}
-                className={`w-full rounded-2xl border p-4 text-left transition-colors ${
-                  lockup === o.value
-                    ? "border-brand bg-brand-soft"
-                    : "border-line bg-surface hover:border-brand/50"
+                className={`card w-full p-4 text-left transition-colors ${
+                  lockup === o.value ? "border-brand/60 shadow-glow" : "hover:border-brand/40"
                 }`}
               >
                 <p className="text-sm font-semibold text-ink">{o.title}</p>
                 <p className="mt-1 text-[13px] leading-snug text-muted">{o.desc}</p>
               </button>
             ))}
-          </div>
-        )}
 
-        {step === 2 && (
-          <div className="mt-4 space-y-3">
-            <button
-              type="button"
-              onClick={() => setSimplicity(true)}
-              aria-pressed={simplicity === true}
-              className={`w-full rounded-2xl border p-4 text-left transition-colors ${
-                simplicity
-                  ? "border-brand bg-brand-soft"
-                  : "border-line bg-surface hover:border-brand/50"
-              }`}
-            >
-              <p className="text-sm font-semibold text-ink">Simple paths first</p>
-              <p className="mt-1 text-[13px] leading-snug text-muted">
-                Prefer single-vault strategies with one clear mechanism.
-              </p>
-            </button>
-            <button
-              type="button"
-              onClick={() => setSimplicity(false)}
-              aria-pressed={simplicity === false}
-              className={`w-full rounded-2xl border p-4 text-left transition-colors ${
-                !simplicity
-                  ? "border-brand bg-brand-soft"
-                  : "border-line bg-surface hover:border-brand/50"
-              }`}
-            >
-              <p className="text-sm font-semibold text-ink">Show me everything</p>
-              <p className="mt-1 text-[13px] leading-snug text-muted">
-                I'm happy to compare complex strategies too.
-              </p>
-            </button>
-          </div>
-        )}
+          {step === 2 && (
+            <>
+              <button
+                type="button"
+                onClick={() => setSimplicity(true)}
+                aria-pressed={simplicity === true}
+                className={`card w-full p-4 text-left transition-colors ${
+                  simplicity ? "border-brand/60 shadow-glow" : "hover:border-brand/40"
+                }`}
+              >
+                <p className="text-sm font-semibold text-ink">Simple paths first</p>
+                <p className="mt-1 text-[13px] leading-snug text-muted">
+                  Prefer single-vault strategies with one clear mechanism.
+                </p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setSimplicity(false)}
+                aria-pressed={simplicity === false}
+                className={`card w-full p-4 text-left transition-colors ${
+                  !simplicity ? "border-brand/60 shadow-glow" : "hover:border-brand/40"
+                }`}
+              >
+                <p className="text-sm font-semibold text-ink">Show me everything</p>
+                <p className="mt-1 text-[13px] leading-snug text-muted">
+                  I'm happy to compare complex strategies too.
+                </p>
+              </button>
+            </>
+          )}
+        </div>
 
         <div className="mt-6 flex gap-3">
           {step > 0 && (
-            <button
-              type="button"
-              onClick={() => setStep(step - 1)}
-              className="flex-1 rounded-xl border border-line bg-surface px-4 py-3 text-sm font-semibold text-ink transition-colors hover:border-brand"
-            >
+            <button type="button" onClick={() => setStep(step - 1)} className="btn-ghost flex-1">
               Back
             </button>
           )}
@@ -182,14 +166,12 @@ export default function OnboardingPage() {
             type="button"
             disabled={!canContinue}
             onClick={() => (step < 2 ? setStep(step + 1) : finish())}
-            className="flex-1 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-white shadow-card transition-colors hover:bg-brand-strong disabled:cursor-not-allowed disabled:opacity-40"
+            className="btn-primary flex-1"
           >
             {step < 2 ? "Continue" : "Show my matches"}
           </button>
         </div>
-      </main>
-
-      <BottomNav />
+      </div>
     </div>
   );
 }
@@ -206,54 +188,47 @@ function Results({
   const recs = recommendLive({ riskTolerance: tolerance, lockupComfort: lockup, simplicity });
 
   return (
-    <div className="container-phone pb-safe">
-      <header className="px-4 pt-5">
-        <h1 className="text-2xl font-bold tracking-tight text-ink">Your matches</h1>
-        <p className="mt-1 text-sm leading-relaxed text-ink-soft">
+    <div className="container-app py-10">
+      <div className="mx-auto max-w-2xl">
+        <p className="micro">Fit check complete</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-ink">Your matches</h1>
+        <p className="mt-2 text-sm leading-relaxed text-ink-soft">
           Ranked for a {tolerance.toLowerCase()} risk comfort
           {lockup !== "none" ? " with lock-up tolerance" : " requiring quick exits"}.
           You can always change your answers and re-rank.
         </p>
-      </header>
 
-      <main className="mt-4 space-y-3 px-4">
-        {recs.map((r) => (
-          <Link
-            key={r.strategyId}
-            href={`/strategies/${r.strategyId}`}
-            className="block rounded-2xl border border-line bg-surface p-4 shadow-card transition-colors hover:border-brand"
-          >
-            <div className="flex items-center gap-3">
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-bold text-paper">
-                {r.rank}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-ink">
-                  {getStrategy(r.strategyId)?.name ?? r.strategyId}
-                </p>
-                <p className="text-[13px] leading-snug text-muted">{r.reason}</p>
+        <div className="mt-6 space-y-3">
+          {recs.map((r) => (
+            <Link
+              key={r.strategyId}
+              href={`/strategies/${r.strategyId}`}
+              className="card group block p-4 transition-colors hover:border-brand/50"
+            >
+              <div className="flex items-center gap-3">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand font-mono text-xs font-bold text-[#03201b]">
+                  {r.rank}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-ink group-hover:text-brand">
+                    {getStrategy(r.strategyId)?.name ?? r.strategyId}
+                  </p>
+                  <p className="text-[13px] leading-snug text-muted">{r.reason}</p>
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          ))}
+        </div>
 
-        <div className="flex gap-3 pt-2">
-          <Link
-            href="/strategies"
-            className="flex-1 rounded-xl bg-brand px-4 py-3 text-center text-sm font-semibold text-white shadow-card transition-colors hover:bg-brand-strong"
-          >
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link href="/strategies" className="btn-primary">
             Compare all strategies
           </Link>
-          <Link
-            href="/onboarding"
-            className="flex-1 rounded-xl border border-line bg-surface px-4 py-3 text-center text-sm font-semibold text-ink transition-colors hover:border-brand"
-          >
+          <Link href="/onboarding" className="btn-ghost">
             Re-answer
           </Link>
         </div>
-      </main>
-
-      <BottomNav />
+      </div>
     </div>
   );
 }

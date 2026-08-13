@@ -47,7 +47,7 @@ export function LiveVaultStats({ strategies }: { strategies: Strategy[] }) {
     return (
       <div className="space-y-2">
         {vaults.map((v) => (
-          <div key={v.address} className="h-16 animate-pulse rounded-2xl bg-line/60" />
+          <div key={v.address} className="h-12 animate-pulse rounded-xl bg-line/40" />
         ))}
       </div>
     );
@@ -55,7 +55,7 @@ export function LiveVaultStats({ strategies }: { strategies: Strategy[] }) {
 
   if (query.isError) {
     return (
-      <div className="rounded-2xl border border-warn/30 bg-warn/5 p-4 text-sm text-warn">
+      <div className="rounded-xl border border-warn/30 bg-warn/5 p-4 text-[13px] text-warn">
         Could not reach Coston2 right now. Vault totals will appear once the RPC is
         reachable again.
       </div>
@@ -67,19 +67,20 @@ export function LiveVaultStats({ strategies }: { strategies: Strategy[] }) {
       {query.data?.map(({ vault, totalAssets }) => (
         <li
           key={vault.address}
-          className="flex items-center justify-between rounded-2xl border border-line bg-surface p-3.5 shadow-card"
+          className="flex items-center justify-between gap-3 rounded-xl border border-line/60 bg-surface-2 px-3.5 py-3"
         >
-          <div>
-            <p className="text-sm font-semibold text-ink">{vault.name}</p>
-            <p className="font-mono text-[11px] text-muted">
+          <div className="min-w-0">
+            <p className="truncate text-[13px] font-semibold text-ink">{vault.name}</p>
+            <p className="font-mono text-[10px] text-muted">
               vaultId {vault.vaultId} · {shortenAddress(vault.address)}
             </p>
           </div>
-          <div className="text-right">
-            <p className="text-sm font-bold text-ink">
-              {totalAssets != null ? formatCompact(totalAssets, 6) : "—"} FXRP
+          <div className="shrink-0 text-right">
+            <p className="font-mono text-[13px] font-bold text-ink">
+              {totalAssets != null ? formatCompact(totalAssets, 6) : "—"}{" "}
+              <span className="font-semibold text-muted">FXRP</span>
             </p>
-            <p className="text-[11px] text-muted">total assets</p>
+            <p className="text-[10px] text-muted">total assets</p>
           </div>
         </li>
       ))}

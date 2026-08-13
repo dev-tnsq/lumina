@@ -1,23 +1,20 @@
 import Link from "next/link";
-import { BottomNav } from "@/components/BottomNav";
 
 export default function NotFound() {
   return (
-    <div className="container-phone pb-safe">
-      <div className="flex min-h-screen flex-col items-center justify-center px-4 text-center">
-        <p className="text-sm font-semibold uppercase tracking-wide text-brand">404</p>
-        <h1 className="mt-2 text-2xl font-bold text-ink">Page not found</h1>
-        <p className="mt-2 text-sm leading-relaxed text-muted">
-          That page doesn&apos;t exist. Let&apos;s get you back to your strategies.
+    <div className="container-app flex min-h-[60vh] items-center justify-center">
+      <div className="text-center">
+        <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-brand">
+          404 / unknown route
         </p>
-        <Link
-          href="/"
-          className="mt-5 rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-white shadow-card transition-colors hover:bg-brand-strong"
-        >
+        <h1 className="mt-3 text-2xl font-bold text-ink">Page not found</h1>
+        <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted">
+          That route doesn&apos;t exist. Let&apos;s get you back to your strategies.
+        </p>
+        <Link href="/" className="btn-primary mt-6">
           Back to home
         </Link>
       </div>
-      <BottomNav />
     </div>
   );
 }
