@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test": "echo \"Contracts tests will be added by the Contracts agent\""
+    "build": "forge build",
+    "test": "forge test",
+    "deploy:registry": "bash scripts/deploy-registry.sh"
+  },
+  "devDependencies": {
+    "@flarenetwork/flare-periphery-contracts": "^0.1.52"
   }
 }

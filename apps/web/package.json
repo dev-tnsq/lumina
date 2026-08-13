@@ -6,8 +6,28 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
+  },
+  "dependencies": {
+    "@lumina/shared": "workspace:*",
+    "@tanstack/react-query": "^5.62.7",
+    "next": "^15.5.23",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "viem": "^2.55.15",
+    "wagmi": "^2.14.11",
+    "xrpl": "^4.4.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.8.3"
   }
 }

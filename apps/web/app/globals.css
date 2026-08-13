@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+/*
+ * Lumina design tokens — "safe money" aesthetic.
+ * Warm paper background, ink navy text, deep-teal trust accent.
+ * Risk colours are semantic and used everywhere risk is shown.
+ */
+@theme {
+  --color-paper: #f7f7f3;
+  --color-surface: #ffffff;
+  --color-ink: #101828;
+  --color-ink-soft: #3f4a5c;
+  --color-muted: #667085;
+  --color-line: #e7e7e0;
+  --color-brand: #0e7c66;
+  --color-brand-strong: #0a6352;
+  --color-brand-soft: #e6f4f0;
+  --color-gold: #b98a2f;
+  --color-gold-soft: #faf3e3;
+  --color-risk-conservative: #0e7c66;
+  --color-risk-conservative-soft: #e6f4f0;
+  --color-risk-balanced: #b45309;
+  --color-risk-balanced-soft: #fdf1e3;
+  --color-risk-advanced: #be123c;
+  --color-risk-advanced-soft: #fde8ee;
+  --color-danger: #be123c;
+  --color-warn: #b45309;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
+    monospace;
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.05), 0 4px 16px rgb(16 24 40 / 0.06);
+  --shadow-card-hover: 0 2px 4px rgb(16 24 40 / 0.07),
+    0 12px 28px rgb(16 24 40 / 0.12);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Soft focus ring in brand colour for keyboard users. */
+*:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+/* Thin, unobtrusive scrollbars in the mobile shell. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+
+@utility container-phone {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 28rem; /* 448px — phone-first column */
+}
+
+@utility pb-safe {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 5.5rem);
+}

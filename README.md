@@ -18,8 +18,30 @@ It is tightly aligned with Flare’s current direction: FAssets (direct minting 
 
 ## Current status
 
-Foundation is complete (research, PRD, architecture, multi-agent system, monorepo scaffold).  
-OpenCode (or any capable coding agent) takes over from here and builds the full product to user-ready state following the strict rules in `/docs`.
+Product is built, deployed to Coston2 testnet and verified end-to-end with real
+on-chain transactions:
+
+**Deployed on Coston2 (chainId 114):**
+
+| Contract | Address | Notes |
+| --- | --- | --- |
+| `LuminaStrategyRegistry` | `0x36d0B0617e02690373AA521b8E978a62321295D7` | Lumina's on-chain vault registry, deployed 2026-08-14. Owner: `0x6292…3f64`. 4 vaults registered + active. |
+
+**Live verification (2026-08-14):**
+
+- Registry read from the UI: the Strategies page renders the on-chain registry
+  (`getActiveVaults()`) live and cross-checks it against the catalog.
+- Real deposit into `Firelight stXRP` vault (`0xC90D…0361`):
+  - approve: `0xd0a9a753b2d680e3fc98f721c1aa16944b0fa9b4deacdf40602c6fe20878cb31`
+  - deposit 5 FXRP → 5 stXRP: `0xcf9f129188637d9773bc23e3f190b321586c200dd2dda3a852635ac44f72b186`
+  - Dashboard lookup of the depositor shows `5 FXRP` balance + `5 stXRP` shares
+    (caught and fixed a shares-decimals bug during this pass).
+- `pnpm test:e2e` — 10/10 Playwright journeys pass (mobile viewport, real Coston2 reads).
+
+Full product surface: onboarding risk questionnaire → ranked matches → strategy
+detail (risk breakdown, yield in context, live on-chain registry audit) →
+guided FSA deposit prep + EVM deposit → dashboard with live positions by
+address lookup.
 
 ## Quick start for OpenCode
 
