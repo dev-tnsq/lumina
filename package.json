@@ -1,0 +1,17 @@
+{
+  "name": "lumina",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lumina — AI copilot for safe XRP entry into Flare XRPFi",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "test:e2e": "pnpm --filter web test:e2e"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@9.15.0"
+}
