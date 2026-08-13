@@ -9,6 +9,7 @@ import {
   SUGGESTED_PROMPTS,
   VAULT_ABI,
   formatUnitsValue,
+  type AgentIntent,
   type AgentLink,
 } from "@lumina/shared";
 import { getLiveStrategies } from "@lumina/shared";
@@ -20,6 +21,7 @@ interface Message {
   role: "user" | "agent";
   text: string;
   links?: AgentLink[];
+  intent?: AgentIntent;
 }
 
 /** Live vault totals, passed to the agent so its on-chain answers are real reads. */
@@ -77,7 +79,7 @@ export function AgentChat({ compact = false }: { compact?: boolean }) {
       const res = respondToUser(text, {
         vaultTotals: totals.data,
       });
-      setMessages((m) => [...m, { role: "agent", text: res.text, links: res.links }]);
+      setMessages((m) => [...m, { role: "agent", text: res.text, links: res.links, intent: res.intent }]);
       setThinking(false);
     }, 450);
   }
@@ -111,6 +113,25 @@ export function AgentChat({ compact = false }: { compact?: boolean }) {
               }`}
             >
               <p className="whitespace-pre-line">{m.text}</p>
+              {m.intent && (
+                <div className="mt-2.5 rounded-xl border border-brand/40 bg-brand/10 p-3">
+                  <p className="font-mono text-[10px] font-semibold uppercase tracking-wider text-brand">
+                    intent · {m.intent.action}
+                  </p>
+                  <p className="mt-1 text-[12px] leading-snug text-ink">
+                    Deposit {m.intent.amount} FXRP · {m.intent.strategyId} ·{" "}
+                    {m.intent.path.toUpperCase()}
+                  </p>
+                  <Link
+                    href={`/execute/${m.intent.strategyId}?amount=${encodeURIComponent(
+                      m.intent.amount
+                    )}&path=${m.intent.path}&via=agent`}
+                    className="mt-2 inline-flex items-center gap-1 rounded-lg bg-brand px-3 py-1.5 text-[12px] font-bold text-[#03201b] transition-colors hover:bg-brand-strong"
+                  >
+                    Execute deposit →
+                  </Link>
+                </div>
+              )}
               {m.links && m.links.length > 0 && (
                 <div className="mt-2.5 flex flex-wrap gap-2">
                   {m.links.map((l) => (

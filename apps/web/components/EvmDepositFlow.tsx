@@ -18,7 +18,14 @@ import { ERC20_ABI, VAULT_ABI, COSTON2, COSTON2_CONTRACTS, formatUnitsValue, sho
  * Steps: connect wallet → get test FXRP from the faucet if needed →
  * approve the vault → deposit. Every error surfaces with a recovery step.
  */
-export function EvmDepositFlow({ strategy }: { strategy: Strategy }) {
+export function EvmDepositFlow({
+  strategy,
+  initialAmount,
+}: {
+  strategy: Strategy;
+  /** Pre-filled by an agent intent (?amount=). */
+  initialAmount?: string;
+}) {
   const vault = strategy.vault;
   const asset = strategy.asset ?? { symbol: "FXRP", decimals: 6, address: COSTON2_CONTRACTS.fxrp as `0x${string}` };
 
@@ -26,7 +33,7 @@ export function EvmDepositFlow({ strategy }: { strategy: Strategy }) {
   const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
 
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(initialAmount ?? "");
   const [txHash, setTxHash] = useState<`0x${string}` | null>(null);
 
   const { data: balance, refetch: refetchBalance } = useReadContract({
@@ -58,7 +65,6 @@ export function EvmDepositFlow({ strategy }: { strategy: Strategy }) {
 
   const { writeContractAsync, isPending: isWritePending, error: writeError } = useWriteContract();
   const {
-    data: receipt,
     isPending: isConfirming,
     isSuccess,
     error: receiptError,

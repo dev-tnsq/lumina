@@ -7,6 +7,7 @@ const NAV = [
   { href: "/", label: "Home" },
   { href: "/strategies", label: "Strategies" },
   { href: "/agent", label: "Agent" },
+  { href: "/fassets", label: "FAssets" },
   { href: "/dashboard", label: "Dashboard" },
 ] as const;
 
@@ -76,7 +77,7 @@ export function SiteHeader() {
         aria-label="Mobile navigation"
         className="flex border-t border-line/60 md:hidden"
       >
-        <div className="container-app grid grid-cols-4">
+        <div className="container-app grid grid-cols-5">
           {NAV.map((item) => {
             const active = isActive(item.href);
             return (

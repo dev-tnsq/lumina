@@ -9,12 +9,15 @@ export function SiteFooter() {
           Lumina · copilot for XRP on Flare · running on Coston2 with test assets —
           no real money moves here.
         </p>
-        <nav className="flex items-center gap-4">
+        <nav className="flex flex-wrap items-center gap-4">
           <Link href="/strategies" className="transition-colors hover:text-brand">
             Strategies
           </Link>
           <Link href="/agent" className="transition-colors hover:text-brand">
             Agent
+          </Link>
+          <Link href="/fassets" className="transition-colors hover:text-brand">
+            FAssets
           </Link>
           <Link href="/dashboard" className="transition-colors hover:text-brand">
             Dashboard

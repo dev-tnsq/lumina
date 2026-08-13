@@ -10,7 +10,6 @@ import {
   ERC20_ABI,
   VAULT_ABI,
   getLiveStrategies,
-  getStrategy,
   COSTON2_CONTRACTS,
   formatUnitsValue,
   shortenAddress,

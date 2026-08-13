@@ -13,5 +13,7 @@ export * from "./risk";
 export * from "./strategies";
 export * from "./agent";
 export * from "./flare";
+export * from "./registry";
+export * from "./fassets";
 export * from "./format";
 export * from "./recommend";

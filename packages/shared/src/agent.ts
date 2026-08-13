@@ -1,4 +1,4 @@
-import { STRATEGIES, getLiveStrategies } from "./strategies";
+import { STRATEGIES, getLiveStrategies, getStrategy } from "./strategies";
 import { recommendLive } from "./recommend";
 import { formatApyRange } from "./format";
 
@@ -14,9 +14,24 @@ export interface AgentLink {
   href: string;
 }
 
+/**
+ * An actionable intent the agent prepared for the user. The user stays in
+ * control — Lumina resolves the path and pre-fills the transaction, the user
+ * reviews and signs.
+ */
+export interface AgentIntent {
+  action: "deposit";
+  strategyId: string;
+  /** Human amount as typed by the user (e.g. "500"). */
+  amount: string;
+  path: "fsa" | "evm";
+}
+
 export interface AgentResponse {
   text: string;
   links?: AgentLink[];
+  /** When present, the UI renders an execute card for this intent. */
+  intent?: AgentIntent;
 }
 
 export interface AgentContext {
@@ -155,7 +170,13 @@ function onchainExplain(input: string, ctx: AgentContext): AgentResponse {
     "All numbers come straight from the vault contracts — nothing is estimated or mocked.",
     "The strategies page also shows the on-chain registry audit, so you can verify exactly which vaults Lumina considers registered."
   );
-  return { text: lines.join("\n"), links: [{ label: "Live on-chain stats", href: "/strategies" }] };
+  return {
+    text: lines.join("\n"),
+    links: [
+      { label: "Live on-chain stats", href: "/strategies" },
+      { label: "FAssets system tracker", href: "/fassets" },
+    ],
+  };
 }
 
 function faqExplain(input: string): AgentResponse {
@@ -167,7 +188,10 @@ function faqExplain(input: string): AgentResponse {
         "",
         "Lumina sits on top: it finds the vaults, explains their real risk, and prepares the deposits. On Coston2 everything runs with test XRP/FXRP that has no real value.",
       ].join("\n"),
-      links: [{ label: "Read the full research brief", href: "/strategies" }],
+      links: [
+        { label: "FAssets system tracker", href: "/fassets" },
+        { label: "Read the full research brief", href: "/strategies" },
+      ],
     };
   }
   if (q.includes("smart account")) {
@@ -205,10 +229,60 @@ export function SUGGESTED_PROMPTS(): string[] {
   ];
 }
 
+/**
+ * Parse an execution intent from plain language, e.g.
+ * "put 500 xrp to work", "deposit 300 fxrp into firelight",
+ * "invest 100 in clearstar via evm". Returns null when the input is not an
+ * intent — the agent never guesses.
+ */
+function parseIntent(input: string): AgentIntent | null {
+  const q = input.toLowerCase();
+  const verb = /(put|deposit|invest|start|move|allocate|add|earn|grow|stake|deploy|yield)/.test(q);
+  const unit = /\b(xrp|fxrp)\b/.test(q);
+  const amountMatch = q.match(/(\d+(?:[.,]\d+)?)\s*(xrp|fxrp|lots?)/);
+  if (!verb || !unit || !amountMatch) return null;
+
+  const rawAmount = amountMatch[1].replace(",", ".");
+  const parsed = Number(rawAmount);
+  if (!Number.isFinite(parsed) || parsed <= 0 || parsed > 100_000_000) return null;
+
+  const s = strategyByName(input) ?? LIVE[0];
+  if (!s || s.availability !== "live") return null;
+
+  return {
+    action: "deposit",
+    strategyId: s.id,
+    amount: rawAmount,
+    path: /(evm|wallet)/.test(q) ? "evm" : "fsa",
+  };
+}
+
+function intentResponse(intent: AgentIntent): AgentResponse {
+  const s = getStrategy(intent.strategyId);
+  const name = s?.name ?? intent.strategyId;
+  const pathLabel = intent.path === "fsa" ? "Flare Smart Account (one XRPL signature)" : "EVM wallet";
+  return {
+    text: [
+      `Intent prepared: deposit ${intent.amount} FXRP into ${name} via the ${pathLabel}.`,
+      "",
+      "This is a real, executable intent — Lumina resolved the strategy, the amount and the path from what you asked. Review the prepared transaction below: you sign, Lumina never handles your funds.",
+    ].join("\n"),
+    links: [
+      { label: "Full strategy brief", href: `/strategies/${intent.strategyId}` },
+    ],
+    intent,
+  };
+}
+
 /** Route a user prompt to a grounded answer. */
 export function respondToUser(input: string, ctx: AgentContext = {}): AgentResponse {
   const q = input.trim().toLowerCase();
   if (!q) return intro();
+
+  // Execution intents first — "put 500 xrp into firelight" is an action, not
+  // just an explanation. Falling through to the explainer would waste it.
+  const intent = parseIntent(input);
+  if (intent) return intentResponse(intent);
 
   const explained = explainStrategy(input);
   if (explained) return explained;

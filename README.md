@@ -36,12 +36,26 @@ on-chain transactions:
   - deposit 5 FXRP → 5 stXRP: `0xcf9f129188637d9773bc23e3f190b321586c200dd2dda3a852635ac44f72b186`
   - Dashboard lookup of the depositor shows `5 FXRP` balance + `5 stXRP` shares
     (caught and fixed a shares-decimals bug during this pass).
-- `pnpm test:e2e` — 10/10 Playwright journeys pass (mobile viewport, real Coston2 reads).
+- `pnpm test:e2e` — 14/14 Playwright journeys pass (mobile viewport, real Coston2 reads), covering the landing, strategies + registry audit, risk fit-check, FSA/EVM deposit prep, agent chat + executable intents, dashboard, the FAssets system tracker and the public registry API.
 
 Full product surface: onboarding risk questionnaire → ranked matches → strategy
 detail (risk breakdown, yield in context, live on-chain registry audit) →
-guided FSA deposit prep + EVM deposit → dashboard with live positions by
-address lookup.
+guided FSA deposit prep + EVM deposit (with agent pre-filled intents) →
+dashboard with live positions by address lookup → FAssets system tracker.
+
+## Public registry API — "Powered by Lumina"
+
+The on-chain registry is infrastructure, not just UI. Other Flare apps can read
+Lumina's source of truth (what is executable, its real on-chain totals) as JSON:
+
+| Endpoint | Returns |
+| --- | --- |
+| `GET /api/registry` | Live registry records (vaultId, address, name, risk score, APY range, active) + real `totalAssets` per vault + catalog cross-check. |
+| `GET /api/verify?address=0x…` | Whether an address is registered in `LuminaStrategyRegistry`, its record, and whether it matches a Lumina catalog strategy (executable). |
+
+All values are live reads from Coston2 — nothing is hardcoded or cached beyond a
+30s CDN revalidation. The `/fassets` page in the UI documents and links these
+endpoints.
 
 ## Quick start for OpenCode
 

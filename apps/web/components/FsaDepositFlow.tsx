@@ -9,7 +9,6 @@ import {
   fxrpAmountToLots,
   formatUnitsValue,
   FXRP_LOT_SIZE,
-  COSTON2_CONTRACTS,
   XRPL_TESTNET,
 } from "@lumina/shared";
 import {
@@ -29,10 +28,17 @@ import {
  * FSA instruction (deposit into vaultId, amount in FXRP drops) encoded with
  * Flare's official encoder.
  */
-export function FsaDepositFlow({ strategy }: { strategy: Strategy }) {
+export function FsaDepositFlow({
+  strategy,
+  initialAmount,
+}: {
+  strategy: Strategy;
+  /** Pre-filled by an agent intent (?amount=). */
+  initialAmount?: string;
+}) {
   const vault = strategy.vault;
   const [xrplAddress, setXrplAddress] = useState("");
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(initialAmount ?? "");
   const [derived, setDerived] = useState<`0x${string}` | null>(null);
   const [deriving, setDeriving] = useState(false);
   const [derivedError, setDerivedError] = useState<string | null>(null);

@@ -34,13 +34,15 @@ test.describe("Lumina user journeys", () => {
     await page.getByRole("button", { name: "Open Lumina copilot" }).waitFor();
 
     // Both primary actions are reachable.
+    // NOTE: dev-mode cold compile of the target route can take several seconds,
+    // so client-side navigations get generous timeouts.
     await page.getByRole("link", { name: "Ask the agent" }).last().click();
-    await expect(page).toHaveURL(/\/agent/);
+    await expect(page).toHaveURL(/\/agent/, { timeout: 30_000 });
 
     // The fit check is reachable from the hero.
     await page.goto("/");
     await page.getByRole("link", { name: /Take the 20-second fit check/ }).click();
-    await expect(page).toHaveURL(/\/onboarding/);
+    await expect(page).toHaveURL(/\/onboarding/, { timeout: 30_000 });
   });
 
   test("explore strategies with risk labels and live status", async ({ page }) => {
@@ -228,28 +230,108 @@ test.describe("Lumina user journeys", () => {
     });
   });
 
+  test("agent turns plain language into an executable, pre-filled intent", async ({ page }) => {
+    await page.goto("/agent");
+
+    const input = page.getByLabel("Ask the Lumina agent");
+    await input.fill("put 500 xrp into firelight stxrp");
+    await page.getByRole("button", { name: "Send" }).click();
+
+    // The agent resolved strategy + amount + path into a real intent.
+    await expect(page.getByText(/Intent prepared: deposit 500 FXRP/)).toBeVisible({
+      timeout: 10_000,
+    });
+    await expect(page.getByRole("link", { name: /Execute deposit →/ })).toBeVisible();
+
+    // Executing pre-fills the guided deposit from the intent.
+    await page.getByRole("link", { name: /Execute deposit →/ }).click();
+    await expect(page).toHaveURL(
+      /\/execute\/firelight-stxrp\?amount=500&path=fsa&via=agent/,
+      { timeout: 30_000 }
+    );
+    await expect(page.getByText(/intent from the copilot/)).toBeVisible();
+
+    // Derive the FSA and confirm the amount was pre-filled, not typed again.
+    await page.getByLabel("XRPL testnet address").fill("rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh");
+    await page.getByRole("button", { name: "Find my smart account" }).click();
+    await expect(page.getByLabel("Amount in XRP")).toHaveValue("500", { timeout: 20_000 });
+  });
+
+  test("FAssets system tracker reads the minted-token layer live", async ({ page }) => {
+    await page.goto("/fassets");
+
+    await expect(page.getByRole("heading", { name: "FAssets system" })).toBeVisible();
+
+    // Real chain reads render for the token layer.
+    await expect(page.getByText("FXRP supply", { exact: true })).toBeVisible({
+      timeout: 20_000,
+    });
+    await expect(page.getByText(/FTestXRP/)).toBeVisible();
+    await expect(page.getByText(/Share of supply deployed/)).toBeVisible();
+
+    // The registry-capped deployment table lists registered vaults.
+    await expect(page.getByText("Firelight stXRP")).toBeVisible();
+    await expect(page.getByText(/Lot size/)).toBeVisible();
+
+    // The public API is surfaced here too.
+    await expect(page.getByText("GET /api/registry")).toBeVisible();
+  });
+
+  test("public registry API serves live data and verify checks", async ({ request }) => {
+    const reg = await request.get("/api/registry");
+    expect(reg.status()).toBe(200);
+    const regJson = await reg.json();
+    expect(regJson.schema).toBe("lumina.registry/v1");
+    expect(regJson.registry.address).toBe("0x36d0B0617e02690373AA521b8E978a62321295D7");
+    expect(regJson.registry.owner).toBe("0x62925c2f574Bbf0781981E8F5D2cA2C02Dcb3f64");
+    expect(regJson.vaults.length).toBeGreaterThanOrEqual(4);
+
+    const firelight = regJson.vaults.find((v: { vaultId: number }) => v.vaultId === 1);
+    expect(firelight).toBeTruthy();
+    expect(firelight.name).toBe("Firelight stXRP");
+    expect(firelight.totalAssets).not.toBeNull();
+
+    const verify = await request.get(
+      "/api/verify?address=0x9E63a5D282F2fBb7DcE822B98e363b2719D28319"
+    );
+    expect(verify.status()).toBe(200);
+    const verifyJson = await verify.json();
+    expect(verifyJson.registered).toBe(true);
+    expect(verifyJson.record.name).toBe("Clearstar earnXRP");
+    expect(verifyJson.inCatalog).toBe(true);
+    expect(verifyJson.catalogStrategy.executable).toBe(true);
+
+    // Malformed input is rejected, not guessed at.
+    const bad = await request.get("/api/verify?address=nope");
+    expect(bad.status()).toBe(400);
+  });
+
   test("unknown routes recover to home", async ({ page }) => {
     await page.goto("/strategies/does-not-exist");
 
     await expect(page.getByRole("heading", { name: "Page not found" })).toBeVisible();
     await page.getByRole("link", { name: "Back to home" }).click();
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL("/", { timeout: 30_000 });
   });
 
   test("header navigation reaches every primary section", async ({ page }) => {
     await page.goto("/");
 
     // Mobile viewport: the compact nav row is visible (main nav is md+ only).
+    // Each click is a client-side navigation; dev-mode cold compiles get 30s.
     const mobileNav = page.getByLabel("Mobile navigation");
     await mobileNav.getByRole("link", { name: "Strategies", exact: true }).click();
-    await expect(page.getByRole("heading", { name: "Strategies", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Strategies", exact: true })).toBeVisible({ timeout: 30_000 });
 
     await mobileNav.getByRole("link", { name: "Dashboard", exact: true }).click();
     await expect(
       page.getByRole("heading", { name: "Dashboard", exact: true })
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 30_000 });
 
     await mobileNav.getByRole("link", { name: "Agent", exact: true }).click();
-    await expect(page.getByRole("heading", { name: "Ask Lumina anything" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Ask Lumina anything" })).toBeVisible({ timeout: 30_000 });
+
+    await mobileNav.getByRole("link", { name: "FAssets", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "FAssets system" })).toBeVisible({ timeout: 30_000 });
   });
 });
