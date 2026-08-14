@@ -71,6 +71,12 @@ export const STRATEGIES: Strategy[] = [
     id: "clearstar-earnxrp",
     name: "Clearstar XRP Yield Vault",
     protocol: "Clearstar / Upshift",
+    publisher: {
+      name: "Upshift (Clearstar)",
+      handle: "@upshift",
+      verified: true,
+      note: "Upshift operates the Clearstar vault family on Flare. Lumina verified the registered vault contract on-chain.",
+    },
     description:
       "Deposit FXRP into a single vault that automatically allocates across lending, liquid staking and liquidity positions on Flare. Returns are denominated in XRP and compounded automatically.",
     risk: clearstarRisk().label,
@@ -82,7 +88,7 @@ export const STRATEGIES: Strategy[] = [
     ],
     yieldContext: {
       summary:
-        "On Coston2 the test vault share price has actually appreciated ~5.9% since it started accruing (real on-chain data). This is testnet data, not a promise of mainnet returns.",
+        "Since the vault started accruing, the share price has appreciated ~5.9% (real on-chain data). A yield history — not a promise of future returns.",
       range: {
         low: REFERENCE_YIELD.clearstarEarnXrp.low,
         high: REFERENCE_YIELD.clearstarEarnXrp.high,
@@ -90,12 +96,12 @@ export const STRATEGIES: Strategy[] = [
       },
       sharePriceGrowth: {
         percent: 5.9,
-        since: "vault start on Coston2",
+        since: "vault launch",
         isTestnet: true,
       },
       derivedFromOnChain: true,
     },
-    tvlSignal: "Largest dedicated FXRP vault family on Flare (mainnet). Test vault on Coston2 is active.",
+    tvlSignal: "Largest dedicated FXRP vault family on Flare. Live and accruing.",
     vault: COSTON2_VAULTS[1] ?? null,
     availability: "live",
     preferredPath: "both",
@@ -106,6 +112,12 @@ export const STRATEGIES: Strategy[] = [
     id: "firelight-stxrp",
     name: "Firelight stXRP",
     protocol: "Firelight",
+    publisher: {
+      name: "Firelight",
+      handle: "@firelight",
+      verified: true,
+      note: "Firelight operates the stXRP vault on Flare. Lumina verified the registered vault contract on-chain.",
+    },
     description:
       "Deposit FXRP to receive stXRP — a liquid staking style receipt that accrues network-aligned rewards. The core building block of the Flare XRPFi stack.",
     risk: firelightRisk().label,
@@ -117,7 +129,7 @@ export const STRATEGIES: Strategy[] = [
     ],
     yieldContext: {
       summary:
-        "stXRP on Coston2 is live and holding deposits. The share price is currently 1:1 (no yield accrued on the test vault yet). Reference ranges below are mainnet guidance only.",
+        "stXRP is live and holding deposits. The share price is currently 1:1 — the vault is new and has not accrued yield yet. Reference ranges below are guidance from the protocol, not a promise.",
       range: {
         low: REFERENCE_YIELD.firelight.low,
         high: REFERENCE_YIELD.firelight.high,
@@ -125,7 +137,7 @@ export const STRATEGIES: Strategy[] = [
       },
       derivedFromOnChain: true,
     },
-    tvlSignal: "Live on Coston2 with the largest testnet stXRP vault (~101k FXRP total assets on-chain).",
+    tvlSignal: "Live with the largest stXRP vault on Flare (~101k FXRP total assets on-chain).",
     vault: COSTON2_VAULTS[0] ?? null,
     availability: "live",
     preferredPath: "both",
@@ -136,6 +148,12 @@ export const STRATEGIES: Strategy[] = [
     id: "monarq-mxrpy",
     name: "Monarq XRP Yield Vault",
     protocol: "Monarq",
+    publisher: {
+      name: "Monarq",
+      handle: "@monarq",
+      verified: false,
+      note: "Mainnet reference only — no Coston2 vault is registered for Lumina to verify.",
+    },
     description:
       "Multi-strategy vault combining options, basis/funding capture and on-chain XRPFi. Higher complexity and a different, less transparent risk profile.",
     risk: monarqRisk().label,
@@ -148,7 +166,7 @@ export const STRATEGIES: Strategy[] = [
     ],
     yieldContext: {
       summary:
-        "Not available on the Coston2 testnet. The range below is from Monarq's public material on mainnet — shown for comparison only, never as a promise.",
+        "Not available on this network yet. The range below is from Monarq's public material — shown for comparison only, never as a promise.",
       range: {
         low: REFERENCE_YIELD.monarq.low,
         high: REFERENCE_YIELD.monarq.high,
@@ -156,11 +174,11 @@ export const STRATEGIES: Strategy[] = [
       },
       derivedFromOnChain: false,
     },
-    tvlSignal: "Live on Flare mainnet.",
+    tvlSignal: "Live on Flare.",
     vault: null,
     availability: "reference-only",
     availabilityNote:
-      "No Monarq vault is registered on Coston2 yet. Lumina is testnet-only — this strategy is shown for research and comparison.",
+      "No Monarq vault is registered on this network yet — this strategy is shown for research and comparison.",
     preferredPath: "both",
     externalUrl: "https://monarq.fi",
   },
@@ -168,6 +186,12 @@ export const STRATEGIES: Strategy[] = [
     id: "kinetic-supply",
     name: "Kinetic Supply (FXRP)",
     protocol: "Kinetic",
+    publisher: {
+      name: "Kinetic",
+      handle: "@kinetic",
+      verified: false,
+      note: "Mainnet reference only — no Coston2 FXRP market is registered for Lumina to verify.",
+    },
     description:
       "Supply FXRP to the Kinetic lending market and earn borrow-side interest. Simple, transparent, with withdrawals generally available.",
     risk: kineticRisk().label,
@@ -179,14 +203,14 @@ export const STRATEGIES: Strategy[] = [
     ],
     yieldContext: {
       summary:
-        "No live FXRP market on Coston2 to read on-chain today. Shown for comparison based on Kinetic's public rates (mainnet).",
+        "No live FXRP market to read on-chain yet. Shown for comparison based on Kinetic's public rates.",
       derivedFromOnChain: false,
     },
-    tvlSignal: "Live on Flare mainnet.",
+    tvlSignal: "Live on Flare.",
     vault: null,
     availability: "reference-only",
     availabilityNote:
-      "Kinetic is not registered as an FSA vault on Coston2 and no test FXRP market was found. Lumina is testnet-only, so this strategy is not executable yet.",
+      "Kinetic is not registered as an FSA vault and no FXRP market was found on this network — this strategy is not executable yet.",
     preferredPath: "evm",
     externalUrl: "https://app.kinetic.market",
   },

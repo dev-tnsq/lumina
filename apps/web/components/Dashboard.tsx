@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 import { createPublicClient, http, isAddress } from "viem";
+import { TestnetBadge } from "@/components/TestnetBadge";
 import type { Strategy, StrategyVault } from "@lumina/shared";
 import {
   ERC20_ABI,
@@ -22,7 +23,6 @@ const ASSET = { symbol: "FXRP", decimals: 6, address: COSTON2_CONTRACTS.fxrp as 
 
 export function Dashboard() {
   const { address, isConnected } = useAccount();
-  const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
   const [lookup, setLookup] = useState("");
   const [lookupAddress, setLookupAddress] = useState<`0x${string}` | null>(null);
@@ -63,18 +63,9 @@ export function Dashboard() {
         )}
 
         {!isConnected && (
-          <div className="mt-2 flex flex-wrap gap-2">
-            {connectors.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => connect({ connector: c })}
-                className="rounded-xl border border-line bg-surface-2 px-4 py-2.5 text-[13px] font-semibold text-ink transition-colors hover:border-brand"
-              >
-                Connect {c.name}
-              </button>
-            ))}
-          </div>
+          <p className="mt-2 rounded-xl border border-line bg-surface-2 p-3 text-[13px] text-ink-soft">
+            Connect your wallet from the header, or look up any Coston2 address below.
+          </p>
         )}
 
         <form onSubmit={submitLookup} className="mt-3 flex gap-2">
@@ -287,7 +278,7 @@ function EmptyState({ children }: { children?: React.ReactNode }) {
       )}
       <Link
         href="/strategies"
-        className="mt-4 inline-flex rounded-xl bg-brand px-5 py-2.5 text-[13px] font-bold text-[#03201b] shadow-glow transition-colors hover:bg-brand-strong"
+        className="mt-4 inline-flex rounded-xl bg-brand px-5 py-2.5 text-[13px] font-bold text-white transition-colors hover:bg-brand-strong"
       >
         Explore strategies
       </Link>
@@ -302,7 +293,10 @@ export function DashboardHeader() {
         <span className="pulse-dot" aria-hidden="true" />
         positions · live reads
       </p>
-      <h1 className="mt-1 text-3xl font-bold tracking-tight text-ink">Dashboard</h1>
+      <div className="mt-1 flex flex-wrap items-center gap-2">
+        <h1 className="text-3xl font-bold tracking-tight text-ink">Dashboard</h1>
+        <TestnetBadge />
+      </div>
       <p className="mt-2 text-sm leading-relaxed text-ink-soft">
         Your FXRP and vault positions on Coston2 — read live from the chain, nothing
         cached or estimated.

@@ -1,6 +1,7 @@
 import { createPublicClient, http } from "viem";
 import {
-  COSTON2,
+  ACTIVE_NETWORK,
+  formatApyRange,
   formatUnitsValue,
   readRegistryWithTotals,
   STRATEGIES,
@@ -17,8 +18,8 @@ const client = createPublicClient({ chain: coston2, transport: http() });
  *
  * Returns the live LuminaStrategyRegistry records (the on-chain source of
  * truth for what Lumina considers executable) plus real totalAssets per
- * vault and the catalog cross-check. Everything is a live read from Coston2;
- * nothing is hardcoded.
+ * vault and the catalog cross-check with publisher info. Everything is a
+ * live read from the active Flare network; nothing is hardcoded.
  *
  *   GET /api/registry
  */
@@ -52,8 +53,8 @@ export async function GET() {
           owner: live.owner,
           vaultCount: live.vaultCount,
           activeCount: live.activeCount,
-          chainId: COSTON2.chainId,
-          network: COSTON2.networkId,
+          chainId: ACTIVE_NETWORK.chainId,
+          network: ACTIVE_NETWORK.networkId,
         },
         vaults,
         catalog: STRATEGIES.map((s) => ({
@@ -61,8 +62,35 @@ export async function GET() {
           name: s.name,
           protocol: s.protocol,
           availability: s.availability,
+          publisher: {
+            name: s.publisher.name,
+            handle: s.publisher.handle,
+            verified: s.publisher.verified,
+          },
         })),
-        source: "live read from LuminaStrategyRegistry + vault contracts on Coston2",
+        compare: STRATEGIES.map((s) => {
+          const total = s.vault ? live.totals[s.vault.address.toLowerCase()] ?? 0n : 0n;
+          return {
+            id: s.id,
+            name: s.name,
+            protocol: s.protocol,
+            risk: s.risk,
+            availability: s.availability,
+            preferredPath: s.preferredPath,
+            publisher: {
+              name: s.publisher.name,
+              handle: s.publisher.handle,
+              verified: s.publisher.verified,
+            },
+            yieldRange: s.yieldContext.range
+              ? formatApyRange(s.yieldContext.range.low, s.yieldContext.range.high)
+              : null,
+            yieldRangeSource: s.yieldContext.range?.sourceLabel ?? null,
+            totalAssetsFormatted: s.vault ? formatUnitsValue(total, 6) : null,
+            vaultId: s.vault?.vaultId ?? null,
+          };
+        }),
+        source: `live read from LuminaStrategyRegistry + vault contracts on ${ACTIVE_NETWORK.label}`,
         updatedAt: new Date().toISOString(),
       },
       {
@@ -75,7 +103,7 @@ export async function GET() {
     return Response.json(
       {
         schema: "lumina.registry/v1",
-        error: "Could not read the registry on Coston2 right now.",
+        error: `Could not read the registry on ${ACTIVE_NETWORK.label} right now.`,
         detail: (e as Error).message,
       },
       { status: 502, headers: { "Cache-Control": "no-store" } }

@@ -2,20 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { createPublicClient, http } from "viem";
-import {
-  respondToUser,
-  SUGGESTED_PROMPTS,
-  VAULT_ABI,
-  formatUnitsValue,
-  type AgentIntent,
-  type AgentLink,
-} from "@lumina/shared";
-import { getLiveStrategies } from "@lumina/shared";
-import { coston2 } from "@/lib/wagmi";
-
-const publicClient = createPublicClient({ chain: coston2, transport: http() });
+import type { AgentIntent, AgentLink } from "@lumina/shared";
 
 interface Message {
   role: "user" | "agent";
@@ -24,65 +11,92 @@ interface Message {
   intent?: AgentIntent;
 }
 
-/** Live vault totals, passed to the agent so its on-chain answers are real reads. */
-function useVaultTotals() {
-  return useQuery({
-    queryKey: ["agent-vault-totals"],
-    queryFn: async () => {
-      const vaults = getLiveStrategies()
-        .map((s) => s.vault)
-        .filter((v): v is NonNullable<typeof v> => v != null);
-      const rows = await Promise.all(
-        vaults.map(async (v) => {
-          try {
-            const totalAssets = (await publicClient.readContract({
-              address: v.address,
-              abi: VAULT_ABI,
-              functionName: "totalAssets",
-            })) as bigint;
-            return { name: v.name, address: v.address, totalAssets: formatUnitsValue(totalAssets, 6) };
-          } catch {
-            return { name: v.name, address: v.address, totalAssets: "—" };
-          }
-        })
-      );
-      return rows;
-    },
-    staleTime: 30_000,
-  });
+interface AgentStatus {
+  engine: "gemini";
+  model: string;
+  network: string;
+  configured: boolean;
+}
+
+interface AgentReply {
+  text?: string;
+  links?: AgentLink[];
+  intent?: AgentIntent;
+  error?: string;
 }
 
 export function AgentChat({ compact = false }: { compact?: boolean }) {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "agent",
-      text: "Copilot online. I answer from the real strategy catalog and live Coston2 data — no invented numbers. What would you like to do?",
+      text: "Copilot online. I answer from the real strategy catalog and live on-chain data — no invented numbers. What would you like to do?",
     },
   ]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
-  const totals = useVaultTotals();
+  const [status, setStatus] = useState<AgentStatus | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetch("/api/agent")
+      .then((r) => r.json())
+      .then((s: AgentStatus) => setStatus(s))
+      .catch(() => setStatus(null));
+  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, thinking]);
 
-  function ask(prompt: string) {
+  async function ask(prompt: string) {
     const text = prompt.trim();
     if (!text) return;
-    setMessages((m) => [...m, { role: "user", text }]);
+    const history: Message[] = [...messages, { role: "user", text }];
+    setMessages(history);
     setInput("");
     setThinking(true);
     // Small delay so the typing indicator is visible and the reply feels like an agent.
-    window.setTimeout(() => {
-      const res = respondToUser(text, {
-        vaultTotals: totals.data,
+    await new Promise((r) => setTimeout(r, 450));
+    try {
+      const res = await fetch("/api/agent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: history.map((m) => ({ role: m.role, content: m.text })),
+        }),
       });
-      setMessages((m) => [...m, { role: "agent", text: res.text, links: res.links, intent: res.intent }]);
+      const reply = (await res.json()) as AgentReply;
+      if (!res.ok || reply.error || !reply.text) {
+        setMessages((m) => [
+          ...m,
+          {
+            role: "agent",
+            text:
+              reply.error ??
+              "I hit an error while answering that. Please try again in a moment.",
+          },
+        ]);
+        return;
+      }
+      setMessages((m) => [...m, { role: "agent", text: reply.text!, links: reply.links, intent: reply.intent }]);
+    } catch {
+      setMessages((m) => [
+        ...m,
+        {
+          role: "agent",
+          text: "I hit an error while answering that. Please try again in a moment.",
+        },
+      ]);
+    } finally {
       setThinking(false);
-    }, 450);
+    }
   }
+
+  const engineLabel = status
+    ? status.configured
+      ? `gemini · ${status.model}`
+      : "gemini · not configured"
+    : "gemini";
 
   return (
     <div className={`card flex flex-col ${compact ? "h-[440px]" : "h-[520px]"}`}>
@@ -92,10 +106,10 @@ export function AgentChat({ compact = false }: { compact?: boolean }) {
           <span className="pulse-dot" aria-hidden="true" />
           <p className="text-[13px] font-semibold text-ink">Lumina copilot</p>
           <span className="hidden rounded-full bg-brand/10 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-brand sm:inline">
-            grounded · live data
+            {status ? engineLabel : "gemini"}
           </span>
         </div>
-        <p className="telemetry">coston2</p>
+        <p className="telemetry">{status?.network ?? "flare"}</p>
       </div>
 
       {/* Messages */}
@@ -103,12 +117,13 @@ export function AgentChat({ compact = false }: { compact?: boolean }) {
         {messages.map((m, i) => (
           <div
             key={i}
+            data-role={m.role === "user" ? "user-message" : "agent-message"}
             className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
               className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed ${
                 m.role === "user"
-                  ? "rounded-br-md bg-brand text-[#03201b]"
+                  ? "rounded-br-md bg-brand text-white"
                   : "rounded-bl-md border border-line/70 bg-surface-2 text-ink-soft"
               }`}
             >
@@ -126,7 +141,7 @@ export function AgentChat({ compact = false }: { compact?: boolean }) {
                     href={`/execute/${m.intent.strategyId}?amount=${encodeURIComponent(
                       m.intent.amount
                     )}&path=${m.intent.path}&via=agent`}
-                    className="mt-2 inline-flex items-center gap-1 rounded-lg bg-brand px-3 py-1.5 text-[12px] font-bold text-[#03201b] transition-colors hover:bg-brand-strong"
+                    className="mt-2 inline-flex items-center gap-1 rounded-lg bg-brand px-3 py-1.5 text-[12px] font-bold text-white transition-colors hover:bg-brand-strong"
                   >
                     Execute deposit →
                   </Link>
@@ -140,7 +155,7 @@ export function AgentChat({ compact = false }: { compact?: boolean }) {
                       href={l.href}
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-colors ${
                         m.role === "user"
-                          ? "bg-[#03201b]/20 text-[#03201b] hover:bg-[#03201b]/30"
+                          ? "bg-white/15 text-white hover:bg-white/25"
                           : "bg-brand/10 text-brand hover:bg-brand/20"
                       }`}
                     >
@@ -153,7 +168,7 @@ export function AgentChat({ compact = false }: { compact?: boolean }) {
           </div>
         ))}
         {thinking && (
-          <div className="flex justify-start">
+          <div data-role="typing-indicator" className="flex justify-start">
             <div className="rounded-2xl rounded-bl-md border border-line/70 bg-surface-2 px-3.5 py-3">
               <span className="agent-typing" aria-label="Agent is thinking">
                 <span />
@@ -168,7 +183,14 @@ export function AgentChat({ compact = false }: { compact?: boolean }) {
       {/* Suggestions */}
       {messages.length <= 1 && !compact && (
         <div className="flex flex-wrap gap-2 border-t border-line/60 px-4 py-2.5">
-          {SUGGESTED_PROMPTS().map((p) => (
+          {[
+            "Which strategy is right for me?",
+            "Compare Firelight vs Clearstar",
+            "Explain Firelight stXRP and its risks",
+            "How risky is Clearstar?",
+            "How do I make a deposit?",
+            "What's on-chain right now?",
+          ].map((p) => (
             <button
               key={p}
               type="button"

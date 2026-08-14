@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { StrategyCard } from "@/components/StrategyCard";
 import { RegistryAudit } from "@/components/RegistryAudit";
+import { CompareTable } from "@/components/CompareTable";
 import { STRATEGIES } from "@lumina/shared";
 
 export const metadata = {
@@ -55,6 +56,8 @@ export default function StrategiesPage() {
             ))}
           </div>
         </section>
+
+        <CompareTable />
 
         <RegistryAudit strategies={STRATEGIES} />
       </main>

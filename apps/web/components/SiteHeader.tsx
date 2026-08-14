@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ConnectWallet } from "./ConnectWallet";
 
 const NAV = [
   { href: "/", label: "Home" },
@@ -21,10 +22,10 @@ export function SiteHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line/70 bg-paper/80 backdrop-blur-md">
-      <div className="container-app flex h-14 items-center justify-between">
+    <header className="sticky top-0 z-40 border-b border-line bg-paper">
+      <div className="container-app flex h-13 items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-brand/40 bg-brand/10 text-brand shadow-glow">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-line bg-surface text-brand">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path
                 d="M12 2 3 7v10l9 5 9-5V7l-9-5Z"
@@ -60,12 +61,13 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <span className="hidden items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 sm:flex">
+          <span className="hidden items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 lg:flex">
             <span className="pulse-dot" aria-hidden="true" />
             <span className="font-mono text-[10px] font-semibold uppercase tracking-wider text-ink-soft">
               Coston2 · live
             </span>
           </span>
+          <ConnectWallet />
           <Link href="/agent" className="btn-primary !px-3 !py-1.5 !text-xs md:!px-4">
             Ask the agent
           </Link>

@@ -3,7 +3,6 @@ import { xrpToDrops, isValidClassicAddress, encodeAccountID } from "xrpl";
 import { MASTER_ACCOUNT_CONTROLLER_ABI } from "@lumina/shared";
 import { COSTON2_CONTRACTS, XRPL_TESTNET } from "@lumina/shared";
 import { coston2 } from "./wagmi";
-
 const publicClient: PublicClient = createPublicClient({
   chain: coston2,
   transport: http(),

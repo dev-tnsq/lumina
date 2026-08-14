@@ -26,7 +26,7 @@ describe("risk model", () => {
     expect(result.score).toBeGreaterThanOrEqual(50);
   });
 
-  it("flags testnet stage in the default notes", () => {
+  it("flags a recent deployment stage in the default notes", () => {
     const result = scoreRisk({
       audited: true,
       stage: "testnet",
@@ -34,7 +34,7 @@ describe("risk model", () => {
       withdrawal: "period",
       tvl: "moderate",
     });
-    expect(result.defaultNotes.join(" ")).toContain("Testnet");
+    expect(result.defaultNotes.join(" ")).toContain("Recently deployed");
   });
 
   it("always returns a factor breakdown with reasons", () => {

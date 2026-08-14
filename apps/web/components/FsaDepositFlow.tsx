@@ -225,14 +225,14 @@ export function FsaDepositFlow({
 
         {paymentJson ? (
           <>
-            <pre className="mt-3 max-h-64 overflow-auto rounded-xl border border-line/60 bg-[#04070c] p-3 font-mono text-[11px] leading-relaxed text-ink-soft">
+            <pre className="mt-3 max-h-64 overflow-auto rounded-xl border border-line bg-surface-2 p-3 font-mono text-[11px] leading-relaxed text-ink-soft">
               {JSON.stringify(paymentJson, null, 2)}
             </pre>
             <button
               type="button"
               onClick={copyPayment}
               data-copied={copied ? "true" : "false"}
-              className="mt-3 w-full rounded-xl border border-brand/40 bg-brand/10 px-4 py-2.5 text-[13px] font-semibold text-brand transition-colors hover:bg-brand hover:text-[#03201b]"
+              className="mt-3 w-full rounded-xl border border-brand/40 bg-brand/10 px-4 py-2.5 text-[13px] font-semibold text-brand transition-colors hover:bg-brand hover:text-white"
             >
               {copied ? "Copied ✓" : "Copy transaction JSON"}
             </button>

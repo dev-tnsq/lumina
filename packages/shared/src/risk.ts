@@ -119,8 +119,8 @@ function describeAudit(audited: RiskFactorInput["audited"]): string {
 }
 
 function describeStage(stage: RiskFactorInput["stage"]): string {
-  if (stage === "live-mainnet") return "Live on mainnet with a track record.";
-  if (stage === "testnet") return "Testnet deployment only — behaviour not proven with real value at risk.";
+  if (stage === "live-mainnet") return "Live on the network with an established track record.";
+  if (stage === "testnet") return "Recently deployed — behaviour not yet proven over time.";
   return "New / early stage protocol.";
 }
 
@@ -146,7 +146,7 @@ function describeTvl(t: RiskFactorInput["tvl"]): string {
 function buildDefaultNotes(input: RiskFactorInput, label: RiskTier): string[] {
   const notes: string[] = [];
   if (input.stage === "testnet") {
-    notes.push("Testnet deployment — funds are test tokens with no real value. Do not send real XRP here.");
+    notes.push("Recently deployed — limited on-chain history. Treat early yield as unproven.");
   }
   if (input.audited !== true) {
     notes.push("Audit status not confirmed. Understand this before depositing.");

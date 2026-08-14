@@ -1,5 +1,5 @@
 import { createPublicClient, getAddress, http, isAddress } from "viem";
-import { readRegistryLive, STRATEGIES } from "@lumina/shared";
+import { ACTIVE_NETWORK, readRegistryLive, STRATEGIES } from "@lumina/shared";
 import { coston2 } from "@/lib/wagmi";
 
 export const runtime = "nodejs";
@@ -61,9 +61,14 @@ export async function GET(req: Request) {
               name: catalogMatch.name,
               risk: catalogMatch.risk,
               executable: catalogMatch.availability === "live",
+              publisher: {
+                name: catalogMatch.publisher.name,
+                handle: catalogMatch.publisher.handle,
+                verified: catalogMatch.publisher.verified,
+              },
             }
           : null,
-        source: "live read from LuminaStrategyRegistry on Coston2",
+        source: `live read from LuminaStrategyRegistry on ${ACTIVE_NETWORK.label}`,
         updatedAt: new Date().toISOString(),
       },
       {
@@ -76,7 +81,7 @@ export async function GET(req: Request) {
     return Response.json(
       {
         schema: "lumina.verify/v1",
-        error: "Could not read the registry on Coston2 right now.",
+        error: `Could not read the registry on ${ACTIVE_NETWORK.label} right now.`,
         detail: (e as Error).message,
       },
       { status: 502, headers: { "Cache-Control": "no-store" } }

@@ -1,42 +1,39 @@
 @import "tailwindcss";
 
 /*
- * Lumina — "agent console" design system.
- * Deep-space navy canvas, glass panels, mono telemetry labels, teal signal
- * accent. The UI is the copilot: small precise type, live status dots, and
- * a lot of air on both sides.
+ * Lumina — minimal light design system (mika reference).
+ * White canvas, hairline borders, Inter type, tiny precise labels.
+ * One blue accent (#2563eb). No gradients, no glow, no glass.
  */
 @theme {
-  --color-paper: #070b12;
-  --color-surface: #0c1420;
-  --color-surface-2: #101b2a;
-  --color-ink: #e6edf6;
-  --color-ink-soft: #b6c2d4;
-  --color-muted: #7e8ca3;
-  --color-line: #1b2a40;
-  --color-brand: #2dd4bf;
-  --color-brand-strong: #14b8a6;
-  --color-brand-soft: rgba(45, 212, 191, 0.1);
-  --color-gold: #f5b73d;
-  --color-gold-soft: rgba(245, 183, 61, 0.1);
-  --color-risk-conservative: #34d399;
-  --color-risk-conservative-soft: rgba(52, 211, 153, 0.12);
-  --color-risk-balanced: #f5b73d;
-  --color-risk-balanced-soft: rgba(245, 183, 61, 0.12);
-  --color-risk-advanced: #fb7185;
-  --color-risk-advanced-soft: rgba(251, 113, 133, 0.12);
-  --color-danger: #fb7185;
-  --color-warn: #f5b73d;
-  --font-sans: "Inter", "SF Pro Display", ui-sans-serif, system-ui,
-    -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --color-paper: #fafaf9;
+  --color-surface: #ffffff;
+  --color-surface-2: #f5f5f4;
+  --color-ink: #1c1917;
+  --color-ink-soft: #57534e;
+  --color-muted: #a8a29e;
+  --color-line: #e7e5e4;
+  --color-brand: #2563eb;
+  --color-brand-strong: #1d4ed8;
+  --color-brand-soft: rgba(37, 99, 235, 0.08);
+  --color-gold: #ca8a04;
+  --color-gold-soft: rgba(202, 138, 4, 0.1);
+  --color-risk-conservative: #16a34a;
+  --color-risk-conservative-soft: rgba(22, 163, 74, 0.1);
+  --color-risk-balanced: #ca8a04;
+  --color-risk-balanced-soft: rgba(202, 138, 4, 0.12);
+  --color-risk-advanced: #dc2626;
+  --color-risk-advanced-soft: rgba(220, 38, 38, 0.1);
+  --color-danger: #dc2626;
+  --color-warn: #ca8a04;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, ui-sans-serif,
+    system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: "JetBrains Mono", "SF Mono", SFMono-Regular, ui-monospace,
     Menlo, Consolas, monospace;
-  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04) inset,
-    0 10px 30px rgba(0, 0, 0, 0.45);
-  --shadow-card-hover: 0 1px 0 rgba(255, 255, 255, 0.06) inset,
-    0 16px 40px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 0 1px rgba(45, 212, 191, 0.25),
-    0 0 24px rgba(45, 212, 191, 0.18);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-glow: 0 0 0 1px var(--color-brand),
+    0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 html {
@@ -46,15 +43,10 @@ html {
 body {
   background-color: var(--color-paper);
   color: var(--color-ink);
+  font-size: 14px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  background-image:
-    radial-gradient(1200px 500px at 50% -10%, rgba(45, 212, 191, 0.06), transparent 60%),
-    radial-gradient(900px 400px at 100% 0%, rgba(59, 130, 246, 0.05), transparent 55%),
-    linear-gradient(rgba(45, 212, 191, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(45, 212, 191, 0.025) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 44px 44px, 44px 44px;
-  background-attachment: fixed;
 }
 
 /* Soft focus ring for keyboard users. */
@@ -70,62 +62,59 @@ body {
 }
 
 ::selection {
-  background: rgba(45, 212, 191, 0.28);
+  background: rgba(37, 99, 235, 0.18);
   color: var(--color-ink);
 }
 
 /* ---------------------------------- utilities ---------------------------------- */
 
-/* Centred app column with generous side whitespace — desktop web, not a phone shell. */
+/* Centred app column — focused, minimal width. */
 @utility container-app {
   margin-inline: auto;
   width: 100%;
-  max-width: 76rem;
+  max-width: 64rem;
   padding-inline: 1.5rem;
 }
 
-/* Glass panel. */
+/* Flat white card with a hairline border. */
 @utility card {
-  border-radius: 1rem;
-  border: 1px solid color-mix(in srgb, var(--color-line) 80%, transparent);
-  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
-  backdrop-filter: blur(6px);
+  border-radius: 8px;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
   box-shadow: var(--shadow-card);
 }
 
-/* Micro telemetry label — small mono uppercase. */
+/* Micro label — small uppercase, tiny. */
 @utility micro {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-muted);
 }
 
-/* Primary action button. */
+/* Primary action button — near-black, white text (mika). */
 @utility btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 0.75rem;
-  background: var(--color-brand);
-  color: #03201b;
+  border-radius: 6px;
+  background: var(--color-ink);
+  color: #fff;
   font-size: 13px;
-  font-weight: 700;
-  padding: 0.7rem 1.25rem;
-  box-shadow: 0 0 20px rgba(45, 212, 191, 0.25);
-  transition: background 150ms, box-shadow 150ms, transform 150ms;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.5rem 1rem;
+  transition: background 150ms;
 }
 .btn-primary:hover {
-  background: #45e3cd;
-  box-shadow: 0 0 28px rgba(45, 212, 191, 0.4);
+  background: #292524;
 }
 .btn-primary:disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
 /* Secondary/ghost button. */
@@ -134,63 +123,63 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 0.75rem;
+  border-radius: 6px;
   border: 1px solid var(--color-line);
-  background: var(--color-surface);
-  color: var(--color-ink);
+  background: transparent;
+  color: var(--color-ink-soft);
   font-size: 13px;
-  font-weight: 600;
-  padding: 0.7rem 1.25rem;
-  transition: border-color 150ms, background 150ms;
+  font-weight: 500;
+  line-height: 1;
+  padding: 0.5rem 1rem;
+  transition: border-color 150ms, color 150ms;
 }
 .btn-ghost:hover {
-  border-color: var(--color-brand);
-  background: var(--color-surface-2);
+  border-color: var(--color-muted);
+  color: var(--color-ink);
 }
 .btn-ghost:disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Input field. */
 @utility field {
   width: 100%;
-  border-radius: 0.75rem;
+  border-radius: 6px;
   border: 1px solid var(--color-line);
-  background: var(--color-surface-2);
-  padding: 0.65rem 0.85rem;
-  font-size: 14px;
+  background: var(--color-surface);
+  padding: 0.5rem 0.75rem;
+  font-size: 13px;
   color: var(--color-ink);
   outline: none;
-  transition: border-color 150ms, box-shadow 150ms;
+  transition: border-color 150ms;
 }
 .field::placeholder {
-  color: color-mix(in srgb, var(--color-muted) 70%, transparent);
+  color: var(--color-muted);
 }
 .field:focus {
   border-color: var(--color-brand);
-  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.15);
 }
 
-/* Live status dot (pulsing). */
+/* Live status dot (pulsing green). */
 @utility pulse-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 9999px;
-  background: var(--color-brand);
-  box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.5);
+  background: #16a34a;
+  box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.5);
   animation: lumina-pulse 2s infinite;
 }
 
 @keyframes lumina-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.45);
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.45);
   }
   70% {
-    box-shadow: 0 0 0 7px rgba(45, 212, 191, 0);
+    box-shadow: 0 0 0 6px rgba(22, 163, 74, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(45, 212, 191, 0);
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
   }
 }
 
@@ -224,7 +213,7 @@ body {
   }
 }
 
-/* Subtle scroll-in for telemetry rows. */
+/* Subtle telemetry rows. */
 @utility telemetry {
   font-family: var(--font-mono);
   font-size: 11px;

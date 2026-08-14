@@ -82,6 +82,36 @@ export default async function StrategyDetailPage({
       <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_340px]">
         {/* Main column */}
         <main className="space-y-5">
+          <div className="card p-5">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="micro">Who operates this</p>
+                <p className="mt-1 truncate text-[15px] font-semibold text-ink">
+                  {strategy.publisher.name}
+                  {strategy.publisher.handle && (
+                    <span className="ml-1.5 font-mono text-[11px] font-normal text-muted">
+                      {strategy.publisher.handle}
+                    </span>
+                  )}
+                </p>
+                {strategy.publisher.note && (
+                  <p className="mt-1 text-[12px] leading-snug text-ink-soft">
+                    {strategy.publisher.note}
+                  </p>
+                )}
+              </div>
+              <span
+                className={`shrink-0 rounded-full px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider ${
+                  strategy.publisher.verified
+                    ? "bg-brand/10 text-brand"
+                    : "bg-gold-soft text-gold"
+                }`}
+              >
+                {strategy.publisher.verified ? "✓ verified on-chain" : "not yet verified"}
+              </span>
+            </div>
+          </div>
+
           <YieldDisclosure yieldContext={strategy.yieldContext} />
           {strategy.vault && (
             <VaultReadout vault={strategy.vault} assetSymbol={strategy.asset?.symbol ?? "FXRP"} />
@@ -103,7 +133,7 @@ export default async function StrategyDetailPage({
         {/* Sticky agent brief */}
         <aside className="lg:sticky lg:top-20 lg:self-start">
           <div className="card overflow-hidden">
-            <div className="border-b border-line/60 bg-gradient-to-br from-brand/10 to-transparent px-5 py-4">
+            <div className="border-b border-line/60 px-5 py-4">
               <p className="micro flex items-center gap-2">
                 <span className="pulse-dot" aria-hidden="true" />
                 agent brief

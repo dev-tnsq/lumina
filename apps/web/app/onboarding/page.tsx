@@ -38,6 +38,22 @@ export default function OnboardingPage() {
   const [lockup, setLockup] = useState<(typeof LOCKUP_OPTIONS)[number]["value"] | null>(null);
   const [simplicity, setSimplicity] = useState<boolean>(true);
   const [done, setDone] = useState(false);
+  const [restored, setRestored] = useState(false);
+
+  // Returning users keep their answers: restore the saved preferences on mount.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(PREFERENCES_KEY);
+      if (!raw) return;
+      const prefs = JSON.parse(raw) as Partial<RiskPreferences>;
+      if (prefs.riskTolerance) setTolerance(prefs.riskTolerance);
+      if (prefs.lockupComfort) setLockup(prefs.lockupComfort);
+      if (typeof prefs.simplicity === "boolean") setSimplicity(prefs.simplicity);
+      setRestored(true);
+    } catch {
+      /* storage unavailable — fresh questionnaire */
+    }
+  }, []);
 
   useEffect(() => {
     document.title = "Find your fit · Lumina";
@@ -59,7 +75,17 @@ export default function OnboardingPage() {
   }
 
   if (done && tolerance && lockup) {
-    return <Results tolerance={tolerance} lockup={lockup} simplicity={simplicity} />;
+    return (
+      <Results
+        tolerance={tolerance}
+        lockup={lockup}
+        simplicity={simplicity}
+        onReanswer={() => {
+          setDone(false);
+          setStep(0);
+        }}
+      />
+    );
   }
 
   const canContinue =
@@ -71,6 +97,12 @@ export default function OnboardingPage() {
         <Link href="/" className="text-[13px] font-semibold text-brand hover:underline">
           ← Home
         </Link>
+        {restored && (
+          <p className="mt-3 rounded-xl border border-brand/30 bg-brand/10 p-3 text-[12px] leading-snug text-ink-soft">
+            Welcome back — we restored your saved answers from your last fit
+            check. Adjust them or jump straight to your matches.
+          </p>
+        )}
         <div className="mt-3 flex items-center gap-2">
           <h1 className="text-2xl font-bold tracking-tight text-ink">
             {step === 0 && "How do you feel about risk?"}
@@ -180,10 +212,12 @@ function Results({
   tolerance,
   lockup,
   simplicity,
+  onReanswer,
 }: {
   tolerance: RiskTier;
   lockup: RiskPreferences["lockupComfort"];
   simplicity: boolean;
+  onReanswer: () => void;
 }) {
   const recs = recommendLive({ riskTolerance: tolerance, lockupComfort: lockup, simplicity });
 
@@ -206,7 +240,7 @@ function Results({
               className="card group block p-4 transition-colors hover:border-brand/50"
             >
               <div className="flex items-center gap-3">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand font-mono text-xs font-bold text-[#03201b]">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand font-mono text-xs font-bold text-white">
                   {r.rank}
                 </span>
                 <div className="min-w-0 flex-1">
@@ -224,9 +258,9 @@ function Results({
           <Link href="/strategies" className="btn-primary">
             Compare all strategies
           </Link>
-          <Link href="/onboarding" className="btn-ghost">
+          <button type="button" onClick={onReanswer} className="btn-ghost">
             Re-answer
-          </Link>
+          </button>
         </div>
       </div>
     </div>

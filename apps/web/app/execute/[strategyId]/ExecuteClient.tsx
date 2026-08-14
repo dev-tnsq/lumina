@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getStrategy } from "@lumina/shared";
 import { RiskBadge } from "@/components/RiskBadge";
+import { TestnetBadge } from "@/components/TestnetBadge";
 import { FsaDepositFlow } from "@/components/FsaDepositFlow";
 import { EvmDepositFlow } from "@/components/EvmDepositFlow";
 
@@ -76,6 +77,7 @@ export function ExecuteClient({
         </Link>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <h1 className="text-2xl font-bold tracking-tight text-ink">Guided deposit</h1>
+          <TestnetBadge />
           <RiskBadge tier={strategy.risk} size="sm" />
         </div>
         <p className="mt-1 text-sm leading-relaxed text-ink-soft">
@@ -108,7 +110,7 @@ export function ExecuteClient({
               <div className="flex items-center gap-1.5">
                 <p className="text-[13px] font-semibold text-ink">{o.title}</p>
                 {o.preferred && (
-                  <span className="rounded-full bg-brand px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-[#03201b]">
+                  <span className="rounded-full bg-brand px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-white">
                     Preferred
                   </span>
                 )}

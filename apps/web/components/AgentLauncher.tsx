@@ -18,7 +18,7 @@ export function AgentLauncher() {
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? "Close Lumina copilot" : "Open Lumina copilot"}
-        className="fixed bottom-4 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-brand text-[#03201b] shadow-glow transition-transform hover:scale-105 sm:bottom-8 sm:right-8"
+        className="fixed bottom-4 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-brand text-white transition-transform hover:scale-105 sm:bottom-8 sm:right-8"
       >
         {open ? (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">

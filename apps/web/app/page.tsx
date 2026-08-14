@@ -14,14 +14,14 @@ export default function HomePage() {
           <span className="pulse-dot" aria-hidden="true" />
           copilot online · flare coston2
         </p>
-        <h1 className="mt-4 text-4xl font-bold leading-[1.08] tracking-tight text-ink lg:text-5xl">
+        <h1 className="mt-4 text-3xl font-bold leading-[1.12] tracking-tight text-ink lg:text-4xl">
           Put XRP to work on Flare.
           <br />
-          <span className="bg-gradient-to-r from-brand via-[#7dd3fc] to-brand bg-clip-text text-transparent">
+          <span className="text-brand">
             With an agent that won&apos;t lie to you.
           </span>
         </h1>
-        <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-ink-soft">
+        <p className="mt-5 max-w-xl text-sm leading-relaxed text-ink-soft">
           Lumina is your copilot for Flare XRPFi. Ask it anything in plain language —
           it explains the real risk behind every strategy, prepares your deposit
           transaction, and reads your positions straight from the chain. Every number
@@ -95,7 +95,7 @@ export default function HomePage() {
             <LiveVaultStats strategies={STRATEGIES} />
           </div>
         </div>
-        <div className="card flex flex-col justify-between bg-gradient-to-br from-brand/10 to-transparent p-5">
+        <div className="card flex flex-col justify-between p-5">
           <div>
             <p className="micro">Trust, by design</p>
             <p className="mt-3 text-[13px] leading-relaxed text-ink-soft">

@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   useAccount,
-  useConnect,
   useDisconnect,
   useReadContract,
   useWriteContract,
@@ -30,13 +29,12 @@ export function EvmDepositFlow({
   const asset = strategy.asset ?? { symbol: "FXRP", decimals: 6, address: COSTON2_CONTRACTS.fxrp as `0x${string}` };
 
   const { address, isConnected } = useAccount();
-  const { connectors, connect } = useConnect();
   const { disconnect } = useDisconnect();
 
   const [amount, setAmount] = useState(initialAmount ?? "");
   const [txHash, setTxHash] = useState<`0x${string}` | null>(null);
 
-  const { data: balance, refetch: refetchBalance } = useReadContract({
+  const { data: balance, isLoading: balanceLoading, error: balanceError, refetch: refetchBalance } = useReadContract({
     address: asset.address,
     abi: ERC20_ABI,
     functionName: "balanceOf",
@@ -44,7 +42,7 @@ export function EvmDepositFlow({
     query: { enabled: Boolean(address) },
   });
 
-  const { data: allowance, refetch: refetchAllowance } = useReadContract({
+  const { data: allowance, isLoading: allowanceLoading, refetch: refetchAllowance } = useReadContract({
     address: asset.address,
     abi: ERC20_ABI,
     functionName: "allowance",
@@ -65,10 +63,15 @@ export function EvmDepositFlow({
 
   const { writeContractAsync, isPending: isWritePending, error: writeError } = useWriteContract();
   const {
-    isPending: isConfirming,
+    isPending: isReceiptPending,
     isSuccess,
     error: receiptError,
   } = useWaitForTransactionReceipt({ hash: txHash ?? undefined });
+
+  // useWaitForTransactionReceipt keeps isPending=true while its query is
+  // disabled (no hash yet). Only treat it as "confirming" when a tx hash
+  // actually exists, otherwise the whole flow looks stuck.
+  const isConfirming = isReceiptPending && txHash != null;
 
   const balanceFormatted = balance != null ? formatUnitsValue(balance, asset.decimals) : null;
 
@@ -114,6 +117,25 @@ export function EvmDepositFlow({
   const actionError = writeError ?? receiptError;
   const busy = isWritePending || isConfirming;
 
+  // Approve is a permission grant, not a transfer: it only needs a valid
+  // amount. Deposit is the one that requires a real, loaded balance.
+  const amountValid = parsed != null && parsed > 0n;
+  const balanceLoaded = balance != null;
+  const insufficient = balance != null && parsed != null && parsed > balance;
+  const approveDisabled = !amountValid || busy;
+  const depositDisabled = !amountValid || !balanceLoaded || insufficient || busy;
+
+  function actionHint(): string {
+    if (busy) return "A transaction is in progress — wait for it to confirm.";
+    if (!amountValid) return "Enter an amount above to enable the button.";
+    if (!balanceLoaded) {
+      if (balanceError) return "Could not read your balance — is your wallet on Coston2 (chain id 114)?";
+      return "Reading your balance…";
+    }
+    if (insufficient) return `Insufficient balance — you have ${balanceFormatted} ${asset.symbol}.`;
+    return "";
+  }
+
   return (
     <div className="space-y-4">
       {/* Wallet connection */}
@@ -125,18 +147,9 @@ export function EvmDepositFlow({
           )}
         </div>
         {!isConnected ? (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {connectors.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => connect({ connector: c })}
-                className="rounded-xl border border-line bg-surface-2 px-4 py-2.5 text-[13px] font-semibold text-ink transition-colors hover:border-brand"
-              >
-                Connect {c.name}
-              </button>
-            ))}
-          </div>
+          <p className="mt-3 rounded-xl border border-line bg-surface-2 p-3 text-[13px] text-ink-soft">
+            Connect your wallet from the header, then return here to deposit.
+          </p>
         ) : (
           <button
             type="button"
@@ -219,23 +232,28 @@ export function EvmDepositFlow({
               {needsApproval ? (
                 <button
                   type="button"
-                  disabled={!parsed || parsed > (balance ?? 0n) || busy}
+                  disabled={approveDisabled}
                   onClick={approve}
-                  className="flex-1 rounded-xl bg-brand px-4 py-3 text-[13px] font-bold text-[#03201b] shadow-glow transition-colors hover:bg-brand-strong disabled:opacity-40"
+                  className="flex-1 rounded-xl bg-brand px-4 py-3 text-[13px] font-bold text-white transition-colors hover:bg-brand-strong disabled:opacity-40"
                 >
                   {isConfirming && txHash ? "Confirming…" : "Approve"}
                 </button>
               ) : (
                 <button
                   type="button"
-                  disabled={!parsed || parsed > (balance ?? 0n) || busy}
+                  disabled={depositDisabled}
                   onClick={deposit}
-                  className="flex-1 rounded-xl bg-brand px-4 py-3 text-[13px] font-bold text-[#03201b] shadow-glow transition-colors hover:bg-brand-strong disabled:opacity-40"
+                  className="flex-1 rounded-xl bg-brand px-4 py-3 text-[13px] font-bold text-white transition-colors hover:bg-brand-strong disabled:opacity-40"
                 >
                   {isConfirming && txHash ? "Depositing…" : "Deposit"}
                 </button>
               )}
             </div>
+
+            {/* Why the action button is unavailable — never leave it silent. */}
+            {((needsApproval && approveDisabled) || (!needsApproval && depositDisabled)) && (
+              <p className="mt-2 text-xs text-muted">{actionHint()}</p>
+            )}
 
             {txHash && !isSuccess && (
               <p className="mt-2 font-mono text-[11px] break-all text-muted">tx {txHash}</p>

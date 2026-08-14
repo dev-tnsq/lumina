@@ -5,8 +5,25 @@
  * engine, the execution layer, and the position dashboard.
  */
 
-/** The networks Lumina supports. Only Coston2 is user-facing (testnet-first). */
-export type NetworkId = "coston2";
+/** The networks Lumina supports. The active one is chosen by config. */
+export type NetworkId = "coston2" | "flare-mainnet";
+
+/** Who publishes / operates a strategy, and how Lumina verified it. */
+export interface Publisher {
+  /** Protocol / team that built and operates the strategy. */
+  name: string;
+  /** Short handle, e.g. @firelight. */
+  handle: string;
+  /**
+   * Public signer address used by the publisher for on-chain verification,
+   * when Lumina has been able to verify it. Absent = not yet verified on-chain.
+   */
+  address?: `0x${string}`;
+  /** True when Lumina verified the publisher's on-chain relationship to the vault. */
+  verified: boolean;
+  /** One-line plain-language note about who publishes/operates this strategy. */
+  note?: string;
+}
 
 /** Risk tiers used across the product. Conservative < Balanced < Advanced. */
 export type RiskTier = "Conservative" | "Balanced" | "Advanced";
@@ -63,6 +80,8 @@ export interface Strategy {
   id: string;
   name: string;
   protocol: string;
+  /** Who publishes / operates this strategy (transparency). */
+  publisher: Publisher;
   /** One or two sentences, plain language. */
   description: string;
   risk: RiskTier;

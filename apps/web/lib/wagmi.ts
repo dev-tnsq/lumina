@@ -1,23 +1,35 @@
 import { defineChain } from "viem";
 import { createConfig, http, injected } from "wagmi";
+import { ACTIVE_NETWORK } from "@lumina/shared";
 
-/** Flare Coston2 — the only network Lumina operates on (testnet-first). */
-export const coston2 = defineChain({
-  id: 114,
-  name: "Flare Testnet Coston2",
-  nativeCurrency: { name: "Coston2 FLR", symbol: "C2FLR", decimals: 18 },
+/**
+ * The chain Lumina reads from — derived from the active deployment config
+ * (NEXT_PUBLIC_LUMINA_NETWORK). To switch networks you change the env var,
+ * not this file.
+ */
+export const activeChain = defineChain({
+  id: ACTIVE_NETWORK.chainId,
+  name: ACTIVE_NETWORK.name,
+  nativeCurrency: {
+    name: ACTIVE_NETWORK.nativeCurrency.name,
+    symbol: ACTIVE_NETWORK.nativeCurrency.symbol,
+    decimals: ACTIVE_NETWORK.nativeCurrency.decimals,
+  },
   rpcUrls: {
-    default: { http: ["https://coston2-api.flare.network/ext/C/rpc"] },
+    default: { http: [ACTIVE_NETWORK.rpcUrl] },
   },
   blockExplorers: {
-    default: { name: "Coston2 Explorer", url: "https://coston2-explorer.flare.network" },
+    default: { name: ACTIVE_NETWORK.explorerName, url: ACTIVE_NETWORK.explorer },
   },
 });
 
+/** Backwards-compatible alias. */
+export const coston2 = activeChain;
+
 export const wagmiConfig = createConfig({
-  chains: [coston2],
+  chains: [activeChain],
   transports: {
-    [coston2.id]: http("https://coston2-api.flare.network/ext/C/rpc"),
+    [activeChain.id]: http(ACTIVE_NETWORK.rpcUrl),
   },
   connectors: [injected()],
 });
